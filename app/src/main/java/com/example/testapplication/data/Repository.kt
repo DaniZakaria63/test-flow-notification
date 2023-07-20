@@ -4,6 +4,7 @@ import com.example.testapplication.api.Meals
 import com.example.testapplication.api.ResultMeal
 import com.example.testapplication.data.Result
 import com.example.testapplication.data.api.MealRemoteDataSource
+import com.example.testapplication.data.local.MealsDao
 import com.example.testapplication.data.local.NotificationDao
 import com.example.testapplication.data.model.NotificationModel
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 class Repository(
     private val mealRemoteDataSource: MealRemoteDataSource,
     private val notificationDao: NotificationDao,
+    private val mealsDao: MealsDao,
     private val coroutineScope: CoroutineScope
 ) {
     fun callApiRandomDish() : Flow<Result<Meals>> {
@@ -27,7 +29,7 @@ class Repository(
 
     private fun saveLocalMeal(meals: Meals){
         coroutineScope.launch {
-            notificationDao.saveOneMeal(meals.asDatabaseModel())
+            mealsDao.saveOneMeal(meals.asDatabaseModel())
         }
     }
 

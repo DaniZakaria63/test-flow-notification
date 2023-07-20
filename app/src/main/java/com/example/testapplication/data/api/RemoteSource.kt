@@ -1,6 +1,6 @@
 package com.example.testapplication.data.api
 
-import com.example.testapplication.data.Result
+import com.example.testapplication.api.ResultMeal
 import retrofit2.http.GET
 
 interface RemoteSource {

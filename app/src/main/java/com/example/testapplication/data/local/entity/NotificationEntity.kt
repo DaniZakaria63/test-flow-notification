@@ -7,8 +7,8 @@ import com.example.testapplication.util.StringOperation
 import java.util.Date
 
 @Entity(tableName = "notification")
-data class NotificationEntity(
-    @PrimaryKey @ColumnInfo(name = "id") val id: Int = 0,
+data class NotificationEntity constructor(
+    @PrimaryKey val id: Int = 0,
     @ColumnInfo(name = "meal_id") val mealId: Int,
     @ColumnInfo(name = "title") val title: String = "",
     @ColumnInfo(name = "body") val body: String = "",

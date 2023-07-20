@@ -1,26 +1,40 @@
 package com.example.testapplication.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
-import com.example.testapplication.TestApp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
 import com.example.testapplication.databinding.ActivityMainBinding
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
-/**
- * The layout gonna be something interesting
- * 1. Selection of button will be animation of dropping ball
- * 2. ball can be dragged and choose between three component
- * 3. each component will trigger their own functionality
- */
 class MainActivity : AppCompatActivity() {
     private lateinit var binding : ActivityMainBinding
-    private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+/*
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED){
+                mainViewModel.mealState.collect{ meals ->
+                    Log.d("ASD", "onCreate: ${meals.strMeal}")
+                }
+            }
+        }
+
+        binding.button2.setOnClickListener {
+            lifecycleScope.launch {
+                mainViewModel.triggerPushOnlineNotif()
+            }
+        }
+        */
     }
 }

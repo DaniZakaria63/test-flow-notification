@@ -66,7 +66,7 @@ data class Meals(
     )
 
     fun asDatabaseModel(): MealsEntity = MealsEntity(
-        idMeal = idMeal,
+        id = idMeal,
         strMeal = strMeal,
         strDrinkAlternate = strDrinkAlternate,
         strCategory = strCategory,

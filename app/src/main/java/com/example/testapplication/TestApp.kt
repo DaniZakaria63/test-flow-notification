@@ -8,8 +8,10 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
 class TestApp : Application() {
-    val repository : Repository get() = ServiceLocator.provideRepository(context = this)
-    val appCoroutine: CoroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    val repository : Repository by lazy { ServiceLocator.provideRepository(context = this) }
+    val appCoroutine: CoroutineScope by lazy {
+        CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    }
 
     override fun onLowMemory() {
         super.onLowMemory()

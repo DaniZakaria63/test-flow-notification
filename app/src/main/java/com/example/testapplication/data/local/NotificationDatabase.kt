@@ -10,10 +10,15 @@ import com.example.testapplication.util.DateConverter
 /*Room need to use custom converter object data for Date
 * based on, https://developer.android.com/training/data-storage/room/referencing-data
 * */
-@Database(entities = [NotificationEntity::class, MealsEntity::class], exportSchema = false, version = 1)
+@Database(
+    entities = [NotificationEntity::class, MealsEntity::class],
+    exportSchema = false,
+    version = 1
+)
 @TypeConverters(DateConverter::class)
 abstract class NotificationDatabase : RoomDatabase() {
     abstract fun notificationDao(): NotificationDao
+    abstract fun mealsDao(): MealsDao
 
     companion object {
         const val DB_NAME = "test_notif"

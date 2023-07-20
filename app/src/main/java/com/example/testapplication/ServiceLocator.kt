@@ -6,12 +6,14 @@ import androidx.room.Room
 import com.example.testapplication.data.Repository
 import com.example.testapplication.data.api.MealRemoteDataSource
 import com.example.testapplication.data.api.RemoteApi
+import com.example.testapplication.data.local.MealsDao
 import com.example.testapplication.data.local.NotificationDao
 import com.example.testapplication.data.local.NotificationDatabase
 import com.example.testapplication.util.DateConverter
 
 object ServiceLocator {
     private val lock = Any()
+    @Volatile
     private var database: NotificationDatabase? = null
 
     @Volatile
@@ -40,6 +42,7 @@ object ServiceLocator {
         val newRepo = Repository(
             createMealRemoteDataSource(),
             createNotificationDao(context),
+            createMealsDao(context),
             (context.applicationContext as TestApp).appCoroutine
         )
         repository = newRepo
@@ -55,13 +58,22 @@ object ServiceLocator {
         return database.notificationDao()
     }
 
+    private fun createMealsDao(context: Context): MealsDao {
+        val database = database ?: createDatabaseInstance(context)
+        return database.mealsDao()
+    }
+
     private fun createDatabaseInstance(context: Context): NotificationDatabase {
-        val result = Room.databaseBuilder(
-            context.applicationContext,
-            NotificationDatabase::class.java,
-            NotificationDatabase.DB_NAME
-        ).addTypeConverter(DateConverter()).build()
-        database = result
-        return result
+        return database ?: synchronized(this){
+            val result = Room.databaseBuilder(
+                context.applicationContext,
+                NotificationDatabase::class.java,
+                NotificationDatabase.DB_NAME
+            )
+                .fallbackToDestructiveMigration()
+                .build()
+            database = result
+            return result
+        }
     }
 }
