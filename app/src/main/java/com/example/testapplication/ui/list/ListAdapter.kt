@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.testapplication.R
@@ -14,6 +15,15 @@ import com.example.testapplication.data.model.NotificationModel
 class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
     RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     private val datas = ArrayList<NotificationModel>()
+
+    fun updateData(newData: ArrayList<NotificationModel>) {
+        val diffResult: DiffUtil.DiffResult =
+            DiffUtil.calculateDiff(Comparator(datas, newData))
+
+        this.datas.clear()
+        this.datas.addAll(newData)
+        diffResult.dispatchUpdatesTo(this)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -46,4 +56,19 @@ class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
         val divNotif = view.findViewById<LinearLayout>(R.id.div_notif)
     }
 
+    inner class Comparator(
+        val oldValue: ArrayList<NotificationModel>,
+        val newValue: ArrayList<NotificationModel>
+    ) : DiffUtil.Callback() {
+        override fun getOldListSize(): Int = oldValue.size
+
+        override fun getNewListSize(): Int = newValue.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldValue[oldItemPosition].id == newValue[newItemPosition].id
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldValue[oldItemPosition].id == newValue[newItemPosition].id
+
+    }
 }

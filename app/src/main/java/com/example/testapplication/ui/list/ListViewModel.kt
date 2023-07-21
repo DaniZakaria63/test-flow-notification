@@ -7,9 +7,12 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.testapplication.TestApp
 import com.example.testapplication.data.Repository
+import com.example.testapplication.data.Result
+import com.example.testapplication.data.model.NotificationModel
+import kotlinx.coroutines.flow.Flow
 
 class ListViewModel(private val repository: Repository) : ViewModel() {
-
+    val allListData : Flow<Result<List<NotificationModel>>> get() =  repository.getAllNotification()
 
     companion object{
         val Factory : ViewModelProvider.Factory = viewModelFactory {

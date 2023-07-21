@@ -1,6 +1,7 @@
 package com.example.testapplication.api
 
 import com.example.testapplication.data.local.entity.MealsEntity
+import com.example.testapplication.data.model.NotificationModel
 
 data class ResultMeal(val meals: List<Meals>) {
     fun getFirst(): Meals = meals[0]
@@ -61,9 +62,9 @@ data class Meals(
     val strMeasure19: String? = "",
     val strMeasure20: String? = "",
 ) {
-    constructor() : this(
-        0,
-    )
+//    fun asNotificationModel() : NotificationModel {
+//        return NotificationModel(idMeal, idMeal, )
+//    }
 
     fun asDatabaseModel(): MealsEntity = MealsEntity(
         id = idMeal,

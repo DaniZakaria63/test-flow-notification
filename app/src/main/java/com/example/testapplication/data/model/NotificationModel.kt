@@ -29,3 +29,18 @@ data class NotificationModel(
         )
     }
 }
+
+fun List<NotificationEntity>.notifDbToModel(): List<NotificationModel> {
+    return map {
+        NotificationModel(
+            it.id,
+            it.mealId,
+            it.title,
+            it.body,
+            it.img_remote,
+            it.arrived,
+            it.isClicked,
+            it.isSeen
+        )
+    }
+}

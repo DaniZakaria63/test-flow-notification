@@ -7,6 +7,7 @@ import com.example.testapplication.data.api.MealRemoteDataSource
 import com.example.testapplication.data.local.MealsDao
 import com.example.testapplication.data.local.NotificationDao
 import com.example.testapplication.data.model.NotificationModel
+import com.example.testapplication.data.model.notifDbToModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -21,6 +22,12 @@ class Repository(
     private val mealsDao: MealsDao,
     private val coroutineScope: CoroutineScope
 ) {
+
+    fun getAllNotification() : Flow<Result<List<NotificationModel>>> {
+        return notificationDao.findAll()
+            .map { value ->  Result.Success(value.notifDbToModel())}
+    }
+
     fun callApiRandomDish() : Flow<Result<Meals>> {
         return mealRemoteDataSource.callRandomAPI()
             .map { value: ResultMeal -> Result.Success(value.getFirst()) }
