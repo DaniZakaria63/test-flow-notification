@@ -6,14 +6,30 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import com.example.testapplication.R
+import com.example.testapplication.databinding.FragmentListBinding
 
 class ListFragment : Fragment() {
-    private lateinit var viewModel: ListViewModel
+    private var _binding : FragmentListBinding? = null
+    private val binding get() = _binding!!
+    private val listViewModel: ListViewModel by viewModels { ListViewModel.Factory }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_list, container, false)
+    ): View {
+        _binding = FragmentListBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }

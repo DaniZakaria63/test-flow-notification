@@ -9,6 +9,7 @@ data class NotificationModel(
     val mealId: Int,
     val title: String = "",
     val body: String = "",
+    val img_remote: String = "",
     val arrived: Date,
     val isClicked: Boolean = false,
     val isSeen: Boolean = false
@@ -24,7 +25,7 @@ data class NotificationModel(
 
     fun asDatabaseModel(): NotificationEntity {
         return NotificationEntity(
-            id, mealId, title, body, arrived, isClicked, isSeen
+            id, mealId, title, body, img_remote, arrived, isClicked, isSeen
         )
     }
 }

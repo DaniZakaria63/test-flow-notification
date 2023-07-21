@@ -12,6 +12,7 @@ data class NotificationEntity constructor(
     @ColumnInfo(name = "meal_id") val mealId: Int,
     @ColumnInfo(name = "title") val title: String = "",
     @ColumnInfo(name = "body") val body: String = "",
+    @ColumnInfo(name = "img_remote") val img_remote: String = "",
     @ColumnInfo(name = "arrived") val arrived: Date,
     @ColumnInfo(name = "clicked") val isClicked: Boolean = false,
     @ColumnInfo(name = "seen") val isSeen: Boolean = false

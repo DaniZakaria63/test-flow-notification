@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="baseline_grid">8dp</dimen>
+    <dimen name="baseline_1">8dp</dimen>
+    <dimen name="baseline_2">16dp</dimen>
+    <dimen name="baseline_3">24dp</dimen>
+    <dimen name="baseline_4">32dp</dimen>
+    <dimen name="baseline_5">40dp</dimen>
+    <dimen name="baseline_6">48dp</dimen>
+    <dimen name="baseline_7">56dp</dimen>
+    <dimen name="baseline_8">64dp</dimen>
+    <dimen name="baseline_9">72dp</dimen>
+    <dimen name="baseline_10">80dp</dimen>
+    <dimen name="baseline_11">88dp</dimen>
+</resources>
