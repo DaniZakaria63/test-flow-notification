@@ -74,7 +74,7 @@ class MainFragment : Fragment() {
         }
 
         binding.button2.setOnClickListener {
-            coroutineScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
                 mainViewModel.triggerPushOnlineNotif()
             }
         }
@@ -89,12 +89,15 @@ class MainFragment : Fragment() {
     /*to produce create notification inside MainActivity
     * args: meals: Meals [MainViewModel->mealState] [DummyButton]
     * give: formatted notification object that will pass to [MainViewModel->triggerNotification]
-    * */
+    * ps, notification id in this section is not necessary because not provided to database*/
     private fun createNotification(meals: Meals){
         val notification : NotificationModel = if(meals.idMeal == 0)
             DummyNotificationHelper().getOne()
-        else NotificationModel(0,0, "","","", Date(), false, false)
+        else meals.asNotificationModel()
 
+        coroutineScope.launch {
+            mainViewModel.triggerNotification(notification)
+        }
     }
 
 

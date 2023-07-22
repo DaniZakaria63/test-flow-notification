@@ -36,14 +36,14 @@ class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
     * 2. update local to isClicked true*/
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val data = datas[position]
-        holder.txtTitleNotif.text = data.title
-        holder.txtBodyNotif.text = data.body
+        holder.txtTitleNotif.text = data.titleFormatted
+        holder.txtBodyNotif.text = data.bodyFormatted
         holder.divNotif.setOnClickListener { callback(data.mealId) }
 
-        Glide.with(holder.itemView)
-            .load(data)
-            .placeholder(android.R.drawable.ic_menu_gallery)
-            .into(holder.imgAvatar)
+//        Glide.with(holder.itemView)
+//            .load(data)
+//            .placeholder(android.R.drawable.ic_menu_gallery)
+//            .into(holder.imgAvatar)
     }
 
     override fun getItemCount(): Int = datas.size

@@ -9,4 +9,9 @@ class MealRemoteDataSource(private val remoteApi: RemoteSource) {
         val randomData = remoteApi.getRandomDish()
         emit(randomData)
     }
+
+    fun callDetailApi(id: Int) : Flow<ResultMeal> = flow {
+        val detailData = remoteApi.getDetail(id)
+        emit(detailData)
+    }
 }

@@ -2,6 +2,7 @@ package com.example.testapplication.api
 
 import com.example.testapplication.data.local.entity.MealsEntity
 import com.example.testapplication.data.model.NotificationModel
+import java.util.Date
 
 data class ResultMeal(val meals: List<Meals>) {
     fun getFirst(): Meals = meals[0]
@@ -62,9 +63,18 @@ data class Meals(
     val strMeasure19: String? = "",
     val strMeasure20: String? = "",
 ) {
-//    fun asNotificationModel() : NotificationModel {
-//        return NotificationModel(idMeal, idMeal, )
-//    }
+    fun asNotificationModel(): NotificationModel {
+        return NotificationModel(
+            idMeal,
+            idMeal,
+            strMeal.toString(),
+            strInstructions.toString(),
+            strMealThumb.toString(),
+            Date(),
+            false,
+            false
+        )
+    }
 
     fun asDatabaseModel(): MealsEntity = MealsEntity(
         id = idMeal,

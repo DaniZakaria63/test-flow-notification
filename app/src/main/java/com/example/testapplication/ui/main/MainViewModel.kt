@@ -61,12 +61,14 @@ class MainViewModel(private val repository: Repository) : ViewModel() {
         }
     }
 
-    fun triggerPushOnlineNotif(): Flow<Result<Meals>> {
-        return repository.callApiRandomDish()
-            .catch { exception ->
-                _mealState.value = Result.Error(Exception(exception))
-                _exceptionState.emit(exception.message.toString())
-            }
+    fun triggerPushOnlineNotif() {
+        viewModelScope.launch {
+            repository.callApiRandomDish()
+                .catch { exception ->
+                    _mealState.value = Result.Error(Exception(exception))
+                    _exceptionState.emit(exception.message.toString())
+                }.collect{ meals -> _mealState.value = meals }
+        }
     }
 
     companion object {

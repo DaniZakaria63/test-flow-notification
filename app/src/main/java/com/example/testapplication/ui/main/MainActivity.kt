@@ -27,6 +27,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.example.testapplication.R
 import com.example.testapplication.TestApp
 import com.example.testapplication.TestApp.Companion.NOTIFICATION_CHANNEL_ID
 import com.example.testapplication.data.model.NotificationModel
@@ -65,6 +66,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        notificationPermission()
     }
 
 
@@ -93,6 +95,7 @@ class MainActivity : AppCompatActivity() {
         val pendingIntent = buildPendingIntent(model.mealId)
         val image: Bitmap? = processImage(model.img_remote)
         val builder = NotificationCompat.Builder(this@MainActivity, NOTIFICATION_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(model.title)
             .setContentText(model.body)
             .setStyle(

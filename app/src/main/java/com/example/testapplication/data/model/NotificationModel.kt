@@ -17,6 +17,9 @@ data class NotificationModel(
     val titleFormatted: String
         get() = StringOperation.cutLetter(title)
 
+    val bodyFormatted: String
+        get() = StringOperation.cutLetter(body)
+
     val dateFormatted: String
         get() = StringOperation.dateFormatTime(arrived)
 

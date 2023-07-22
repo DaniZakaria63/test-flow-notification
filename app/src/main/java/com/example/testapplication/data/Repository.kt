@@ -22,6 +22,10 @@ class Repository(
     private val mealsDao: MealsDao,
     private val coroutineScope: CoroutineScope
 ) {
+    fun getDetailMeal(mealsId: Int) : Flow<Result<Meals>>{
+        return mealRemoteDataSource.callDetailApi(mealsId)
+            .map { value -> Result.Success(value.getFirst()) }
+    }
 
     fun getAllNotification() : Flow<Result<List<NotificationModel>>> {
         return notificationDao.findAll()

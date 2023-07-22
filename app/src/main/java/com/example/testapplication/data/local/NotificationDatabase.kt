@@ -13,7 +13,7 @@ import com.example.testapplication.util.DateConverter
 @Database(
     entities = [NotificationEntity::class, MealsEntity::class],
     exportSchema = false,
-    version = 2
+    version = 3
 )
 @TypeConverters(DateConverter::class)
 abstract class NotificationDatabase : RoomDatabase() {
