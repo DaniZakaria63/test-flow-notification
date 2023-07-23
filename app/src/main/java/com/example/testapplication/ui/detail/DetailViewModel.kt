@@ -24,6 +24,9 @@ class DetailViewModel(private val repository: Repository) : ViewModel() {
     private val _mealData : MutableLiveData<Meals> = MutableLiveData<Meals>(Meals(0))
     val mealData : LiveData<Meals> get() = _mealData
 
+    private val _imageMeal : MutableLiveData<String> = MutableLiveData()
+    val imageMeal : LiveData<String> get() = _imageMeal
+
     private val _exception : MutableSharedFlow<String> = MutableSharedFlow(replay = 0)
     val exception : SharedFlow<String> get() = _exception
 
@@ -37,7 +40,10 @@ class DetailViewModel(private val repository: Repository) : ViewModel() {
                     _exception.emit(error.message.toString())
                 }.collect{ meal ->
                     when(meal){
-                        is Result.Success -> _mealData.value = meal.data!!
+                        is Result.Success -> {
+                            _mealData.value = meal.data!!
+                            _imageMeal.value = meal.data.strMealThumb!!
+                        }
                         is Result.Error -> _exception.emit(meal.exception.toString())
                         Result.Loading -> _loading.emit(true)
                     }

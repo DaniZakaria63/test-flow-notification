@@ -1,4 +1,4 @@
-package com.example.testapplication.util
+package com.example.testapplication.data.source
 
 import com.example.testapplication.data.model.NotificationModel
 import java.util.Date

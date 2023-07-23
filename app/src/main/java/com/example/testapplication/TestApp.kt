@@ -13,7 +13,13 @@ import kotlinx.coroutines.cancel
 class TestApp : Application() {
     val repository : Repository by lazy { ServiceLocator.provideRepository(context = this) }
     val appCoroutine: CoroutineScope by lazy {
-        CoroutineScope(SupervisorJob() + Dispatchers.Default)
+
+        /*this need to write data in application scope
+        * for making safe-state while ViewModel got detach
+        * and no need for suspended
+        * */
+
+        CoroutineScope(SupervisorJob() + Dispatchers.IO)
     }
 
     override fun onCreate() {

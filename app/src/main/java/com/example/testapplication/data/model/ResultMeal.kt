@@ -2,6 +2,7 @@ package com.example.testapplication.api
 
 import com.example.testapplication.data.local.entity.MealsEntity
 import com.example.testapplication.data.model.NotificationModel
+import com.example.testapplication.util.StringOperation
 import java.util.Date
 
 data class ResultMeal(val meals: List<Meals>) {
@@ -63,6 +64,12 @@ data class Meals(
     val strMeasure19: String? = "",
     val strMeasure20: String? = "",
 ) {
+    val strMealFormatted : String
+        get() = StringOperation.cutLetter(strMeal.toString())
+
+    val strInstructionsFormatted: String
+        get() = StringOperation.parseInstruction(strInstructions)
+
     fun asNotificationModel(): NotificationModel {
         return NotificationModel(
             idMeal,

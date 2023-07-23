@@ -6,27 +6,20 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.viewModels
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
-import com.example.testapplication.R
 import com.example.testapplication.TestApp
 import com.example.testapplication.api.Meals
 import com.example.testapplication.data.Result
 import com.example.testapplication.data.model.NotificationModel
 import com.example.testapplication.databinding.FragmentMainBinding
-import com.example.testapplication.ui.list.ListFragment
-import com.example.testapplication.util.DummyNotificationHelper
+import com.example.testapplication.data.source.DummyNotificationHelper
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.lang.Exception
-import java.util.Date
 
 /**
  * The layout gonna be something interesting
