@@ -23,7 +23,7 @@ import java.lang.Exception
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
-    private val mainViewModel: MainViewModel by activityViewModels { MainViewModel.Factory }
+    private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var listAdapter: ListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,7 +53,7 @@ class ListFragment : Fragment() {
                 mainViewModel.allListData.collect { result ->
                     when (result) {
                         is Result.Success -> listAdapter.updateData(ArrayList(result.data))
-                        is Result.Error -> showErrorDialog(result.exception)
+                        is Result.Error -> showErrorDialog(Exception(result.exception))
                         Result.Loading -> showLoadingBar()
                     }
                 }

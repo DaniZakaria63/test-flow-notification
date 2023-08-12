@@ -24,7 +24,7 @@ class HeaderBackgroundView @JvmOverloads constructor(
     }
     private var image : Drawable? = null
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         drawCurvedLine(canvas)
         drawImage(canvas)

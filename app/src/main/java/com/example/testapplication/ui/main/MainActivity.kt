@@ -15,34 +15,32 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.example.testapplication.BuildConfig.TAG
 import com.example.testapplication.R
 import com.example.testapplication.TestApp
 import com.example.testapplication.TestApp.Companion.NOTIFICATION_CHANNEL_ID
 import com.example.testapplication.data.model.NotificationModel
 import com.example.testapplication.databinding.ActivityMainBinding
 import com.example.testapplication.ui.detail.DetailActivity
-import com.example.testapplication.ui.list.ListViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
+
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var application: TestApp
     private lateinit var binding: ActivityMainBinding
-    private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
+    private val mainViewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,9 +58,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         /* to build the notification, trigger by MainFragment->createNotification()*/
-        application.appCoroutine.launch {
+        lifecycleScope.launch {
             mainViewModel.notificationTrigger.collect { model ->
-                launch { showNotification(model) }
+                Log.d(TAG, "activity notification triggered")
+                showNotification(model)
             }
         }
 
@@ -73,7 +72,7 @@ class MainActivity : AppCompatActivity() {
     /* to push notification by checking the permission first
     * args: model: NotificationModel [MainFragment->createNotification()] [MainViewModel->notificationTrigger]
     * */
-    private suspend fun showNotification(model: NotificationModel) {
+    private fun showNotification(model: NotificationModel) {
         val builder: NotificationCompat.Builder = createNotification(model)
         with(NotificationManagerCompat.from(this@MainActivity)) {
             if (ActivityCompat.checkSelfPermission(
@@ -83,6 +82,7 @@ class MainActivity : AppCompatActivity() {
             ) {
                 notificationPermission()
             }
+            Log.d(TAG, "showNotification: notify")
             notify(model.id, builder.build())
         }
     }
@@ -91,22 +91,18 @@ class MainActivity : AppCompatActivity() {
     /* to build notification as NotificationCompat.Builder
     * args: model: NotificationModel [showNotification()]
     * */
-    private suspend fun createNotification(model: NotificationModel): NotificationCompat.Builder {
+    private fun createNotification(model: NotificationModel): NotificationCompat.Builder {
+        Log.d(TAG, "createNotification: creating notification with notification builder as return")
         val pendingIntent = buildPendingIntent(model.mealId)
-        val image: Bitmap? = processImage(model.img_remote)
-        val builder = NotificationCompat.Builder(this@MainActivity, NOTIFICATION_CHANNEL_ID)
+//        val image: Bitmap? = processImage(model.img_remote)
+
+        return NotificationCompat.Builder(this@MainActivity, NOTIFICATION_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(model.title)
             .setContentText(model.body)
-            .setStyle(
-                NotificationCompat.BigPictureStyle()
-                    .bigPicture(image)
-            )
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
-
-        return builder
     }
 
 
@@ -130,6 +126,7 @@ class MainActivity : AppCompatActivity() {
             addNextIntentWithParentStack(resultIntent)
             getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
+        Log.d(TAG, "buildPendingIntent: building pending intent with id as arguments")
         return resultPendingIntent!!
     }
 
@@ -146,7 +143,7 @@ class MainActivity : AppCompatActivity() {
     /* to get online image as bitmap synchronously inside coroutines with Glide library
     * args: url: String [notification->img_remote] [createNotification()]
     * */
-    private suspend fun processImage(url: String): Bitmap? = withContext(Dispatchers.Default) {
+    private fun processImage(url: String): Bitmap? {
         var bitmap: Bitmap? = null
         Glide.with(this@MainActivity)
             .asBitmap()
@@ -173,7 +170,6 @@ class MainActivity : AppCompatActivity() {
                 }
 
             }).submit()
-
-        return@withContext bitmap
+        return bitmap
     }
 }

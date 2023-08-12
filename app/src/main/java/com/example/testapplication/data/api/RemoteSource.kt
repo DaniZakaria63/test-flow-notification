@@ -1,14 +1,14 @@
 package com.example.testapplication.data.api
 
-import com.example.testapplication.api.ResultMeal
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import com.example.testapplication.data.source.DataSource
+import kotlinx.coroutines.flow.flow
 
-interface RemoteSource {
-    @GET("v1/1/random.php")
-    suspend fun getRandomDish() : ResultMeal
+class RemoteSource(private val remoteApi: IRemoteSource) : DataSource {
+    override fun callRandomAPI() = flow {
+        emit(remoteApi.getRandomDish())
+    }
 
-    @GET("v1/1/lookup.php")
-    suspend fun getDetail(@Query("i") id: Int) : ResultMeal
+    override fun callDetailApi(id: Int) = flow {
+        emit(remoteApi.getDetail(id))
+    }
 }

@@ -4,76 +4,53 @@ import android.content.Context
 import androidx.annotation.VisibleForTesting
 import androidx.room.Room
 import com.example.testapplication.data.Repository
-import com.example.testapplication.data.api.MealRemoteDataSource
+import com.example.testapplication.data.api.RemoteSource
 import com.example.testapplication.data.api.RemoteApi
 import com.example.testapplication.data.local.MealsDao
 import com.example.testapplication.data.local.NotificationDao
 import com.example.testapplication.data.local.NotificationDatabase
-import com.example.testapplication.util.DateConverter
+import com.example.testapplication.data.source.DataRepository
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.android.scopes.ViewModelScoped
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
+
+@Module
+@InstallIn(SingletonComponent::class)
 object ServiceLocator {
-    private val lock = Any()
-    @Volatile
-    private var database: NotificationDatabase? = null
 
-    @Volatile
-    var repository: Repository? = null
 
-    fun provideRepository(context: Context): Repository {
-        synchronized(this) {
-            return repository ?: createRepository(context)
-        }
-    }
-
-    @VisibleForTesting
-    fun resetRepositoru() {
-        database?.apply {
-            clearAllTables()
-            close()
-        }
-
-        synchronized(lock) {
-            database = null
-            repository = null
-        }
-    }
-
-    private fun createRepository(context: Context): Repository {
-        val newRepo = Repository(
-            createMealRemoteDataSource(),
-            createNotificationDao(context),
-            createMealsDao(context),
-            (context.applicationContext as TestApp).appCoroutine
+    @Provides
+    fun provideNotificationDatabase(@ApplicationContext context: Context): NotificationDatabase {
+        return Room.databaseBuilder(
+            context.applicationContext,
+            NotificationDatabase::class.java,
+            NotificationDatabase.DB_NAME
         )
-        repository = newRepo
-        return newRepo
+            .fallbackToDestructiveMigration()
+            .build()
     }
 
-    private fun createMealRemoteDataSource() : MealRemoteDataSource {
-        return MealRemoteDataSource(RemoteApi.getApi())
+
+    @Provides
+    @Singleton
+    fun provideRepository(notificationDatabase: NotificationDatabase): DataRepository {
+        return Repository(
+            RemoteSource(RemoteApi.getApi()),
+            notificationDatabase.notificationDao(),
+            notificationDatabase.mealsDao(),
+        )
     }
 
-    private fun createNotificationDao(context: Context): NotificationDao {
-        val database = database ?: createDatabaseInstance(context)
-        return database.notificationDao()
-    }
 
-    private fun createMealsDao(context: Context): MealsDao {
-        val database = database ?: createDatabaseInstance(context)
-        return database.mealsDao()
-    }
-
-    private fun createDatabaseInstance(context: Context): NotificationDatabase {
-        return database ?: synchronized(this){
-            val result = Room.databaseBuilder(
-                context.applicationContext,
-                NotificationDatabase::class.java,
-                NotificationDatabase.DB_NAME
-            )
-                .fallbackToDestructiveMigration()
-                .build()
-            database = result
-            return result
-        }
+    @Provides
+    @Singleton
+    fun provideDispatcher() : DispatcherProvider {
+        return DefaultDispatcherProvider()
     }
 }

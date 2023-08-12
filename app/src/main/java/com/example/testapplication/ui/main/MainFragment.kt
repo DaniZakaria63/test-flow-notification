@@ -11,6 +11,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import com.example.testapplication.BuildConfig.TAG
 import com.example.testapplication.TestApp
 import com.example.testapplication.api.Meals
 import com.example.testapplication.data.Result
@@ -30,12 +31,10 @@ import java.lang.Exception
 class MainFragment : Fragment() {
     private var _binding : FragmentMainBinding? = null
     private val binding get() = _binding!!
-    private lateinit var coroutineScope : CoroutineScope
-    private val mainViewModel: MainViewModel by activityViewModels{ MainViewModel.Factory }
+    private val mainViewModel: MainViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        coroutineScope = (requireActivity().application as TestApp).appCoroutine
     }
 
     override fun onCreateView(
@@ -55,7 +54,7 @@ class MainFragment : Fragment() {
                 mainViewModel.mealState.collect { meals ->
                     when (meals) {
                         is Result.Success -> createNotification(meals.data)
-                        is Result.Error -> handleError(meals.exception)
+                        is Result.Error -> handleError(Exception(meals.exception))
                         Result.Loading -> handleLoading()
                     }
                 }
@@ -88,7 +87,8 @@ class MainFragment : Fragment() {
             DummyNotificationHelper().getOne()
         else meals.asNotificationModel()
 
-        coroutineScope.launch {
+        lifecycleScope.launch {
+            Log.d(TAG, "create notification trigger")
             mainViewModel.triggerNotification(notification)
         }
     }

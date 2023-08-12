@@ -5,31 +5,18 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import com.example.testapplication.data.Repository
+import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 
+
+@HiltAndroidApp
 class TestApp : Application() {
-    val repository : Repository by lazy { ServiceLocator.provideRepository(context = this) }
-    val appCoroutine: CoroutineScope by lazy {
-
-        /*this need to write data in application scope
-        * for making safe-state while ViewModel got detach
-        * and no need for suspended
-        * */
-
-        CoroutineScope(SupervisorJob() + Dispatchers.IO)
-    }
-
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
-    }
-
-    override fun onLowMemory() {
-        super.onLowMemory()
-        appCoroutine.cancel()
     }
 
     private fun createNotificationChannel(){

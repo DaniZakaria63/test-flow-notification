@@ -8,9 +8,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object RemoteApi {
     private const val BASE_URL = "https://www.themealdb.com/api/json/"
-    private var apiInstance : RemoteSource? = null
+    private var apiInstance : IRemoteSource? = null
 
-    fun getApi() : RemoteSource {
+    fun getApi() : IRemoteSource {
         val logger = HttpLoggingInterceptor{ Log.d("ASD", it   ) }
         logger.level = HttpLoggingInterceptor.Level.BASIC
 
@@ -24,7 +24,7 @@ object RemoteApi {
                 .client(client)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
-                .create(RemoteSource::class.java)
+                .create(IRemoteSource::class.java)
             return apiInstance!!
         }
     }

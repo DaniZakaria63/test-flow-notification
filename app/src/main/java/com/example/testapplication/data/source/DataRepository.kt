@@ -11,9 +11,9 @@ interface DataRepository {
     fun getDetailMeal(mealsId: Int): Flow<Result<Meals>>
     fun getAllNotification(): Flow<Result<List<NotificationModel>>>
     fun callApiRandomDish(): Flow<Result<Meals>>
-    suspend fun getLocalDetailMeal(type: String = "random", id: Int = 0): Result<ResultMeal>
+    suspend fun getLocalDetailMeal(type: String = "random", id: Int = 0): ResultMeal
     suspend fun getLocalById(id: Int): MealsEntity
     suspend fun getLocalRandom(): MealsEntity
-    fun saveLocalMeal(meals: Meals)
-    fun saveLocalNotification(notification: NotificationModel)
+    suspend fun saveLocalMeal(meals: Meals)
+    suspend fun saveLocalNotification(notification: NotificationModel)
 }

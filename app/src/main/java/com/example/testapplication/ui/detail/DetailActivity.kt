@@ -14,12 +14,14 @@ import com.bumptech.glide.Glide
 import com.example.testapplication.R
 import com.example.testapplication.TestApp
 import com.example.testapplication.databinding.ActivityDetailBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
-    private val detailViewModel: DetailViewModel by viewModels { DetailViewModel.Factory }
+    private val detailViewModel: DetailViewModel by viewModels ()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
