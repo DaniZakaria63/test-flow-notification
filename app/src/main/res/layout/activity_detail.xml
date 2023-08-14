@@ -27,7 +27,7 @@
                 android:layout_height="match_parent"
                 android:fitsSystemWindows="true"
                 app:contentScrim="@color/teal_700"
-                app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
                 app:toolbarId="@id/toolbar">
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -42,8 +42,8 @@
                     android:id="@+id/toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="?actionBarSize"
-                    app:layout_collapseMode="pin"
-                    app:popupTheme="@style/ThemeOverlay.AppCompat.Dark"
+                    app:layout_collapseMode="parallax"
+                    app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
                     app:title="@{viewModel.mealData.strMealFormatted}" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
@@ -51,19 +51,27 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="-40dp"
+            android:layout_marginTop="-56dp"
             android:background="@drawable/bg_white_roundedtop"
             android:overScrollMode="never"
-            android:paddingHorizontal="@dimen/baseline_5"
-            android:paddingVertical="@dimen/baseline_5"
+            android:paddingHorizontal="@dimen/baseline_3"
+            android:paddingTop="@dimen/baseline_5"
             app:layout_anchor="@id/app_bar"
             app:layout_anchorGravity="top"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="@dimen/baseline_5">
+                android:layout_height="match_parent">
+
+                <ProgressBar
+                    android:id="@+id/progress_bar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:indicatorColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/txt_title"
@@ -119,23 +127,32 @@
                     app:layout_constraintStart_toStartOf="@id/txt_category"
                     app:layout_constraintTop_toTopOf="@id/label_tags" />
 
-                <TextView
-                    android:id="@+id/label_ingredients"
-                    style="@style/Custom.Headline6"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/baseline_2"
-                    android:text="Ingredients"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/label_tags" />
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rv_ingredients"
+                <LinearLayout
+                    android:id="@+id/div_ingredients"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/baseline_1"
-                    app:layout_constraintStart_toStartOf="@id/label_ingredients"
-                    app:layout_constraintTop_toBottomOf="@id/label_ingredients" />
+                    android:orientation="vertical"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/label_tags">
+
+                    <TextView
+                        android:id="@+id/label_ingredients"
+                        style="@style/Custom.Headline6"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_2"
+                        android:text="Ingredients" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rv_ingredients"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/baseline_1"
+                        android:nestedScrollingEnabled="false"
+                        app:layout_constraintStart_toStartOf="@id/label_ingredients"
+                        app:layout_constraintTop_toBottomOf="@id/label_ingredients" />
+
+                </LinearLayout>
 
                 <TextView
                     android:id="@+id/label_instruction"
@@ -145,7 +162,7 @@
                     android:layout_marginTop="@dimen/baseline_2"
                     android:text="Instructions"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/rv_ingredients" />
+                    app:layout_constraintTop_toBottomOf="@id/div_ingredients" />
 
                 <TextView
                     android:id="@+id/txt_instruction"
@@ -153,6 +170,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/baseline_1"
+                    android:layout_marginBottom="@dimen/baseline_4"
                     android:hint="-"
                     android:text="@{viewModel.mealData.strInstructionsFormatted}"
                     app:layout_constraintStart_toStartOf="parent"

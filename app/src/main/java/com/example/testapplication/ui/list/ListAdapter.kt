@@ -14,15 +14,15 @@ import com.example.testapplication.data.model.NotificationModel
 
 class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
     RecyclerView.Adapter<ListAdapter.ViewHolder>() {
-    private val datas = ArrayList<NotificationModel>()
+    private val datas = mutableListOf<NotificationModel>()
 
-    fun updateData(newData: ArrayList<NotificationModel>) {
+    fun updateData(newData: MutableList<NotificationModel>) {
         val diffResult: DiffUtil.DiffResult =
             DiffUtil.calculateDiff(Comparator(datas, newData))
 
+        diffResult.dispatchUpdatesTo(this)
         this.datas.clear()
         this.datas.addAll(newData)
-        diffResult.dispatchUpdatesTo(this)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -40,10 +40,10 @@ class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
         holder.txtBodyNotif.text = data.bodyFormatted
         holder.divNotif.setOnClickListener { callback(data.mealId) }
 
-//        Glide.with(holder.itemView)
-//            .load(data)
-//            .placeholder(android.R.drawable.ic_menu_gallery)
-//            .into(holder.imgAvatar)
+        Glide.with(holder.itemView)
+            .load(if (data.id == 0) R.drawable.dummy else data.img_remote)
+            .placeholder(android.R.drawable.ic_menu_gallery)
+            .into(holder.imgAvatar)
     }
 
     override fun getItemCount(): Int = datas.size
@@ -57,8 +57,8 @@ class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
     }
 
     inner class Comparator(
-        val oldValue: ArrayList<NotificationModel>,
-        val newValue: ArrayList<NotificationModel>
+        val oldValue: MutableList<NotificationModel>,
+        val newValue: MutableList<NotificationModel>
     ) : DiffUtil.Callback() {
         override fun getOldListSize(): Int = oldValue.size
 

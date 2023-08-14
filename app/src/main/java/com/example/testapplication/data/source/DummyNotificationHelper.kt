@@ -34,14 +34,13 @@ class DummyNotificationHelper {
         val index = (datas.size + 1)
         datas.add(
             NotificationModel(
-                id = index,
                 mealId = index,
-                title,
-                body,
-                img_url,
-                Date(),
-                isClicked,
-                isSeen
+                title = title,
+                body = body,
+                img_remote = img_url,
+                arrived =  Date(),
+                isClicked = isClicked,
+                isSeen = isSeen
             )
         )
     }

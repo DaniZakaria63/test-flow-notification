@@ -5,18 +5,19 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.Date
 
-class FakeNotificationDao: NotificationDao {
-    private val dummyNotification = mutableListOf<NotificationEntity>(
-        NotificationEntity(id = 0, mealId = 0, arrived = Date()),
-        NotificationEntity(id = 1, mealId = 1, arrived = Date()),
-        NotificationEntity(id = 2, mealId = 2, arrived = Date()),
-    )
+class FakeNotificationDao(
+    private val dummyNotification: MutableList<NotificationEntity>
+): NotificationDao {
+
+    private val shouldReturnError : Boolean = false
 
     override fun findAll(): Flow<List<NotificationEntity>> = flow {
+        if(shouldReturnError) throw IllegalStateException("ShouldReturnError, error happened")
         emit(dummyNotification)
     }
 
     override fun saveOneNotification(notification: NotificationEntity) {
+        if(shouldReturnError) throw IllegalStateException("ShouldReturnError, error happened")
         dummyNotification.add(notification)
     }
 }

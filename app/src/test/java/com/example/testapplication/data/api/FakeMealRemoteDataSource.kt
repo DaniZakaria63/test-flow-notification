@@ -7,23 +7,15 @@ import com.example.testapplication.data.source.DataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 
-class FakeMealRemoteDataSource : DataSource {
-    private val meals: List<Meals> = listOf(
-        Meals(idMeal = 0),
-        Meals(idMeal = 1),
-        Meals(idMeal = 2),
-        Meals(idMeal = 3),
-        Meals(idMeal = 4)
-    )
-
-    override fun callRandomAPI(): Flow<Result<ResultMeal>> = flow {
-        emit(Result.Success(ResultMeal(meals)))
+class FakeMealRemoteDataSource(private val meals: List<Meals>) : DataSource {
+    override fun callRandomAPI(): Flow<ResultMeal> = flow {
+        emit(ResultMeal(meals))
     }
 
-    override fun callDetailApi(id: Int): Flow<Result<ResultMeal>> = flow {
+    override fun callDetailApi(id: Int): Flow<ResultMeal> = flow {
         val oneValue = meals.find { it.idMeal == id }
             ?: throw IndexOutOfBoundsException("Meals Data Does Not Exist")
         val value = ResultMeal(listOf(oneValue))
-        emit(Result.Success(value))
+        emit(value)
     }
 }

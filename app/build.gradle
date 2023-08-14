@@ -47,7 +47,6 @@ android {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0'
     def coroutine_version = "1.5.0"
     def lifecycle_version = "2.6.1"
     def activity_version = "1.7.2"
@@ -65,6 +64,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutine_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.2"
     implementation 'org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.7.0'
 
     //  Lifecycle
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
@@ -107,6 +107,7 @@ dependencies {
     // Android Test Unit
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
+    androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
     androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }

@@ -3,7 +3,7 @@ package com.example.testapplication.data.local.entity
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.testapplication.api.Meals
+import com.example.testapplication.data.model.Meals
 
 @Entity(tableName = "meals")
 data class MealsEntity constructor(

@@ -13,6 +13,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.testapplication.BuildConfig.TAG
 import com.example.testapplication.R
 import com.example.testapplication.data.Result
 import com.example.testapplication.databinding.FragmentListBinding
@@ -50,29 +51,37 @@ class ListFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
+                mainViewModel.refreshNotificationList()
                 mainViewModel.allListData.collect { result ->
+                    binding.swipeRefresh.isRefreshing = false
                     when (result) {
-                        is Result.Success -> listAdapter.updateData(ArrayList(result.data))
-                        is Result.Error -> showErrorDialog(Exception(result.exception))
+                        is Result.Success -> listAdapter.updateData(result.data.toMutableList())
+                        is Result.Error -> showErrorDialog(result.exception)
                         Result.Loading -> showLoadingBar()
                     }
                 }
             }
         }
+
+        binding.swipeRefresh.setOnRefreshListener {
+            mainViewModel.refreshNotificationList(refreshed = true)
+        }
     }
 
     /*Error animation should belongs to activity*/
-    private fun showErrorDialog(exception: Exception) {
+    private fun showErrorDialog(exception: Throwable) {
+        //TODO: Put some error status
         exception.printStackTrace()
     }
 
     /*Loading animation should belongs to activity*/
     private fun showLoadingBar() {
-        Log.d("ASD", "Loading, still loading, gonna put some animation")
+        binding.swipeRefresh.isRefreshing = true
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        mainViewModel.clearNotificationList()
     }
 }

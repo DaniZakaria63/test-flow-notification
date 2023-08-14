@@ -1,11 +1,12 @@
 package com.example.testapplication.data.local
 
 import android.content.res.Resources.NotFoundException
+import com.example.testapplication.api.Meals
 import com.example.testapplication.data.local.entity.MealsEntity
 
-class FakeMealsDao: MealsDao {
-    private val dummyMeals = mutableListOf<MealsEntity>()
-
+class FakeMealsDao(
+    private val dummyMeals: MutableList<MealsEntity>
+): MealsDao {
     override fun findAll(): List<MealsEntity> {
         return dummyMeals
     }
