@@ -1,5 +1,7 @@
 package com.example.testapplication.data.model
 
+import android.util.Log
+import com.example.testapplication.BuildConfig
 import com.example.testapplication.data.local.entity.MealsEntity
 import com.example.testapplication.util.StringOperation
 import java.util.Date
@@ -134,4 +136,64 @@ data class Meals(
         strMeasure19 = strMeasure19,
         strMeasure20 = strMeasure20
     )
+
+    fun parseIngredient() : List<Pair<String, String>> {
+        val state = mutableListOf<Pair<String, String>>()
+        val ingredients = listOf(
+            strIngredient1,
+            strIngredient2,
+            strIngredient3,
+            strIngredient4,
+            strIngredient5,
+            strIngredient6,
+            strIngredient7,
+            strIngredient8,
+            strIngredient9,
+            strIngredient10,
+            strIngredient11,
+            strIngredient12,
+            strIngredient13,
+            strIngredient14,
+            strIngredient15,
+            strIngredient16,
+            strIngredient17,
+            strIngredient18,
+            strIngredient19,
+            strIngredient20,
+        )
+        val measures = listOf(
+            strMeasure1,
+            strMeasure2,
+            strMeasure3,
+            strMeasure4,
+            strMeasure5,
+            strMeasure6,
+            strMeasure7,
+            strMeasure8,
+            strMeasure9,
+            strMeasure10,
+            strMeasure11,
+            strMeasure12,
+            strMeasure13,
+            strMeasure14,
+            strMeasure15,
+            strMeasure16,
+            strMeasure17,
+            strMeasure18,
+            strMeasure19,
+            strMeasure20
+        )
+        for (i in 1..20) {
+            try {
+                val ingredient =
+                    if (ingredients[i].equals("")) throw NullPointerException() else ingredients[i]!!
+                val measure =
+                    if (measures[i].equals("")) throw NullPointerException() else measures[i]!!
+                state.add(Pair(ingredient, measure))
+            } catch (e: Exception) {
+                Log.i(BuildConfig.TAG, "parseIngredients: Skip this value")
+            }
+        }
+        return state.toList()
+    }
 }

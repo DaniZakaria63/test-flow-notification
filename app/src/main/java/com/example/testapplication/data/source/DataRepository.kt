@@ -16,4 +16,6 @@ interface DataRepository {
     suspend fun getLocalRandom(): MealsEntity
     suspend fun saveLocalMeal(meals: Meals)
     suspend fun saveLocalNotification(notification: NotificationModel)
+    suspend fun updateNotifSeenStatus(status: Boolean)
+    suspend fun updateNotifClickedStatus(mealsId: Int)
 }

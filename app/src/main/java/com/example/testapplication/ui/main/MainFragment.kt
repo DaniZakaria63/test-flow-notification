@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.example.testapplication.databinding.FragmentMainBinding
 import kotlinx.coroutines.launch
 
@@ -41,13 +40,8 @@ class MainFragment : Fragment() {
 
         binding.button2.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                mainViewModel.triggerPushOnlineNotif()
+                mainViewModel.triggerPushOnlineNotify()
             }
-        }
-
-        binding.button3.setOnClickListener {
-            val action = MainFragmentDirections.actionMainFragmentToListFragment()
-            findNavController().navigate(action)
         }
     }
 

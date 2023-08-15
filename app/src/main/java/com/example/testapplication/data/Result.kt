@@ -19,12 +19,23 @@ sealed class Result<out R> {
     }
 }
 
-fun <T> Flow<T>.asResult() : Flow<Result<T>> {
-    return this.onStart {
-        Result.Loading
-    }.catch {
-        Result.Error(it)
-    }.map {
-        Result.Success(it)
-    }
+data class UiState<T>(
+    val dataList: List<T>? = null,
+    val dataSingle: T? = null,
+    val isLoading: Boolean = false,
+    val isError: Boolean = false,
+) {
+    val status: Status
+        get() = if (isLoading) {
+            Status.LOADING
+        } else if (isError) {
+            Status.ERROR
+        } else {
+            Status.DATA
+        }
+}
+
+
+enum class Status {
+    LOADING, ERROR, DATA
 }

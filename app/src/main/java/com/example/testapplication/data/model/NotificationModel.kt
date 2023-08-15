@@ -11,7 +11,7 @@ data class NotificationModel(
     val body: String = "",
     val img_remote: String = "",
     val arrived: Date,
-    val isClicked: Boolean = false,
+    var isClicked: Boolean = false,
     val isSeen: Boolean = false
 ) {
     val titleFormatted: String

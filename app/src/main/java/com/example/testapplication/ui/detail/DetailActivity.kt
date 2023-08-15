@@ -78,6 +78,10 @@ class DetailActivity : AppCompatActivity() {
                         }
                     }
                 }
+
+                launch {
+                    detailViewModel.updateClickedStatus(mealId)
+                }
             }
         }
     }

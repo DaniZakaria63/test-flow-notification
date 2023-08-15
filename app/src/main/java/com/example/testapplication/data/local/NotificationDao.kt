@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.testapplication.data.local.entity.NotificationEntity
 import kotlinx.coroutines.flow.Flow
 
@@ -14,4 +15,10 @@ interface NotificationDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveOneNotification(notification: NotificationEntity)
+
+    @Query("UPDATE notification SET seen = :seen")
+    fun updateNotificationSeen(seen: Boolean)
+
+    @Query("UPDATE notification SET clicked = :clicked WHERE meal_id = :mealId")
+    fun updateNotifClickedByMealId(clicked: Boolean, mealId: Int)
 }

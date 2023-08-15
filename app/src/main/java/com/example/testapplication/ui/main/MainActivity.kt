@@ -16,10 +16,13 @@ import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.findNavController
+import androidx.navigation.ui.setupWithNavController
 import com.example.testapplication.R
 import com.example.testapplication.TestApp.Companion.NOTIFICATION_CHANNEL_ID
 import com.example.testapplication.data.model.NotificationModel
 import com.example.testapplication.ui.detail.DetailActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -27,13 +30,22 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private val mainViewModel: MainViewModel by viewModels()
+    private lateinit var navigation: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val navController = findNavController(R.id.nav_host_fragment)
+        navigation = findViewById(R.id.bottom_nav_view)
+        navigation.setupWithNavController(navController)
+
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
+
+
+                launch { mainViewModel.refreshNotificationList() }
+
 
                 /* to open detail activity, trigger by ListFragment->adapter callback */
                 launch {
@@ -42,10 +54,20 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
 
+
                 /* to show notification */
                 launch {
                     mainViewModel.notificationTrigger.collect { model ->
                         showNotification(model)
+                    }
+                }
+
+
+                /* listen to notification badge*/
+                launch {
+                    mainViewModel.badgesCount.collect { count ->
+                        if (count > 0) navigation.getOrCreateBadge(R.id.listFragment).number = count
+                        else navigation.removeBadge(R.id.listFragment)
                     }
                 }
             }

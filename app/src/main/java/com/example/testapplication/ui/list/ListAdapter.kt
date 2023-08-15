@@ -1,11 +1,13 @@
 package com.example.testapplication.ui.list
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -39,6 +41,9 @@ class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
         holder.txtTitleNotif.text = data.titleFormatted
         holder.txtBodyNotif.text = data.bodyFormatted
         holder.divNotif.setOnClickListener { callback(data.mealId) }
+        holder.txtStatus.text = if(data.isClicked) "clicked" else "seen"
+        holder.txtStatus.setTextColor(if(data.isClicked) Color.BLUE else Color.DKGRAY)
+        if(data.isSeen) holder.divNotif.setBackgroundColor(Color.parseColor("#dadada"))
 
         Glide.with(holder.itemView)
             .load(if (data.id == 0) R.drawable.dummy else data.img_remote)
@@ -52,8 +57,9 @@ class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val txtTitleNotif = view.findViewById<TextView>(R.id.txt_title_notif)
         val txtBodyNotif = view.findViewById<TextView>(R.id.txt_body_notif)
+        val txtStatus = view.findViewById<TextView>(R.id.txt_status)
         val imgAvatar = view.findViewById<ImageView>(R.id.img_avatar)
-        val divNotif = view.findViewById<LinearLayout>(R.id.div_notif)
+        val divNotif = view.findViewById<ConstraintLayout>(R.id.div_notif)
     }
 
     inner class Comparator(

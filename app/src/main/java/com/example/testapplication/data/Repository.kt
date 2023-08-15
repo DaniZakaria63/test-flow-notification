@@ -14,6 +14,7 @@ import com.example.testapplication.data.source.DataSource
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.retry
@@ -28,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class Repository(
     private val mealRemoteDataSource: DataSource,
     private val notificationDao: NotificationDao,
@@ -55,11 +58,11 @@ class Repository(
 
 
     override fun getAllNotification(): Flow<Result<List<NotificationModel>>> =
-        runBlocking(dispatcher.default) {
-            async(dispatcher.io) {
+        runBlocking(dispatcher.io) {
+            async {
                 notificationDao.findAll()
                     .onStart { Result.Loading }
-                    .map { value -> Result.Success(value.notifDbToModel()) }
+                    .mapLatest { value -> Result.Success(value.notifDbToModel()) }
                     .catch { Result.Error(it) }
             }.await()
         }
@@ -101,4 +104,22 @@ class Repository(
             }
         }
     }
+
+    override suspend fun updateNotifSeenStatus(status: Boolean) {
+        coroutineScope {
+            launch(dispatcher.io) {
+                notificationDao.updateNotificationSeen(status)
+            }
+        }
+    }
+
+    override suspend fun updateNotifClickedStatus(mealsId: Int) {
+        coroutineScope {
+            launch(dispatcher.io) {
+                notificationDao.updateNotifClickedByMealId(true, mealsId)
+            }
+        }
+    }
+
+
 }

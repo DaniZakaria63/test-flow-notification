@@ -4,12 +4,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.testapplication.DispatcherProvider
 import com.example.testapplication.data.Result
+import com.example.testapplication.data.UiState
+import com.example.testapplication.data.model.Meals
 import com.example.testapplication.data.model.NotificationModel
 import com.example.testapplication.data.source.DataRepository
 import com.example.testapplication.data.source.DummyNotificationHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,6 +19,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
@@ -32,11 +36,22 @@ class MainViewModel @Inject constructor(
     private val dispatcher: DispatcherProvider
 ) : ViewModel() {
 
-    private val _allListData: MutableStateFlow<Result<List<NotificationModel>>> =
-        MutableStateFlow(Result.Loading)
-    val allListData: StateFlow<Result<List<NotificationModel>>>
+    private val _allListData: MutableStateFlow<UiState<NotificationModel>> =
+        MutableStateFlow(UiState(isLoading = true))
+    val allListData: StateFlow<UiState<NotificationModel>>
         get() = _allListData.asStateFlow()
-            .stateIn(viewModelScope, SharingStarted.Lazily, Result.Loading)
+            .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), UiState(isLoading = true))
+
+
+    /* badges notification */
+    val badgesCount: SharedFlow<Int> = _allListData
+        .map { state ->
+            val datas = state.dataList?.filter { !it.isSeen }
+            datas?.size ?: 0
+        }
+        .flowOn(dispatcher.io)
+        .shareIn(viewModelScope, SharingStarted.WhileSubscribed())
+
 
     /* communication of exception event */
     private val _exceptionState = MutableSharedFlow<String>(replay = 0)
@@ -67,9 +82,10 @@ class MainViewModel @Inject constructor(
     }
 
 
-    fun triggerPushOnlineNotif() {
+    fun triggerPushOnlineNotify() {
         viewModelScope.launch(dispatcher.main) {
             repository.callApiRandomDish()
+                .flowOn(dispatcher.io)
                 .catch { exception ->
                     _exceptionState.emit(exception.message.toString())
                 }.collect { meals ->
@@ -89,20 +105,33 @@ class MainViewModel @Inject constructor(
 
 
     fun refreshNotificationList(refreshed: Boolean = false) {
-        viewModelScope.launch(dispatcher.default) {
-            _allListData.emit(Result.Loading)
+        viewModelScope.launch(dispatcher.main) {
+            _allListData.emit(UiState(isLoading = true))
             if (refreshed) delay(2_000)
 
             repository.getAllNotification()
-                .onStart { Result.Loading }
-                .catch { Result.Error(it) }
-                .collect { models -> _allListData.emit(models) }
+                .flowOn(dispatcher.io)
+                .onStart { UiState<List<Meals>>(isLoading = true) }
+                .catch { UiState<List<Meals>>(isLoading = false) }
+                .collect { models ->
+                    if (models is Result.Success) _allListData.emit(
+                        UiState(dataList = models.data.sortedByDescending { it.id })
+                    )
+                }
         }
     }
 
-    fun clearNotificationList(){
-        viewModelScope.launch (dispatcher.main) {
-            _allListData.emit(Result.Loading)
+
+    fun updateNotifySeenStatus() {
+        viewModelScope.launch(dispatcher.main) {
+            repository.updateNotifSeenStatus(true)
+        }
+    }
+
+
+    fun clearNotificationList() {
+        viewModelScope.launch(dispatcher.main) {
+            _allListData.emit(UiState(isLoading = true))
         }
     }
 }

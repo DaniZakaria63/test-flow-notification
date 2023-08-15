@@ -1,25 +1,19 @@
 package com.example.testapplication.ui.list
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.testapplication.BuildConfig.TAG
-import com.example.testapplication.R
-import com.example.testapplication.data.Result
+import com.example.testapplication.data.Status
 import com.example.testapplication.databinding.FragmentListBinding
 import com.example.testapplication.ui.main.MainViewModel
 import kotlinx.coroutines.launch
-import java.lang.Exception
 
 class ListFragment : Fragment() {
     private var _binding: FragmentListBinding? = null
@@ -51,13 +45,16 @@ class ListFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.CREATED) {
-                mainViewModel.refreshNotificationList()
+                mainViewModel.updateNotifySeenStatus()
+
                 mainViewModel.allListData.collect { result ->
                     binding.swipeRefresh.isRefreshing = false
-                    when (result) {
-                        is Result.Success -> listAdapter.updateData(result.data.toMutableList())
-                        is Result.Error -> showErrorDialog(result.exception)
-                        Result.Loading -> showLoadingBar()
+                    when (result.status) {
+                        Status.ERROR -> showErrorDialog(Exception(""))
+                        Status.LOADING -> showLoadingBar()
+                        else -> listAdapter.updateData(
+                            result.dataList?.toMutableList() ?: mutableListOf()
+                        )
                     }
                 }
             }
@@ -82,6 +79,6 @@ class ListFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        mainViewModel.clearNotificationList()
+//        mainViewModel.clearNotificationList()
     }
 }
