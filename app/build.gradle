@@ -110,6 +110,9 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit-ktx:1.1.5'
     androidTestImplementation 'androidx.arch.core:core-testing:2.2.0'
     androidTestImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.2'
+    androidTestImplementation 'com.linkedin.dexmaker:dexmaker-mockito:2.28.3'
+    androidTestImplementation 'org.mockito:mockito-core:5.4.0'
+    androidTestImplementation 'app.cash.turbine:turbine:1.0.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 }
 

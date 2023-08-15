@@ -1,7 +1,6 @@
 package com.example.testapplication.data.local
 
 import android.content.res.Resources.NotFoundException
-import com.example.testapplication.api.Meals
 import com.example.testapplication.data.local.entity.MealsEntity
 
 class FakeMealsDao(

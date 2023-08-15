@@ -1,12 +1,12 @@
 package com.example.testapplication.data
 
 import com.example.testapplication.TestCoroutineDispatcher
-import com.example.testapplication.api.Meals
 import com.example.testapplication.data.api.FakeMealRemoteDataSource
 import com.example.testapplication.data.local.FakeMealsDao
 import com.example.testapplication.data.local.FakeNotificationDao
 import com.example.testapplication.data.local.entity.MealsEntity
 import com.example.testapplication.data.local.entity.NotificationEntity
+import com.example.testapplication.data.model.Meals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
