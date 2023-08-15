@@ -183,7 +183,7 @@ data class Meals(
             strMeasure19,
             strMeasure20
         )
-        for (i in 1..20) {
+        for (i in 0..19) {
             try {
                 val ingredient =
                     if (ingredients[i].equals("")) throw NullPointerException() else ingredients[i]!!
@@ -191,7 +191,6 @@ data class Meals(
                     if (measures[i].equals("")) throw NullPointerException() else measures[i]!!
                 state.add(Pair(ingredient, measure))
             } catch (e: Exception) {
-                Log.i(BuildConfig.TAG, "parseIngredients: Skip this value")
             }
         }
         return state.toList()
