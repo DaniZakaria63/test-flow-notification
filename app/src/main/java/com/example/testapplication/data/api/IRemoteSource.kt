@@ -1,6 +1,6 @@
 package com.example.testapplication.data.api
 
-import com.example.testapplication.api.ResultMeal
+import com.example.testapplication.data.model.ResultMeal
 import retrofit2.http.GET
 import retrofit2.http.Query
 

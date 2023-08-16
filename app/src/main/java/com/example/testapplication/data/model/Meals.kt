@@ -1,7 +1,5 @@
 package com.example.testapplication.data.model
 
-import android.util.Log
-import com.example.testapplication.BuildConfig
 import com.example.testapplication.data.local.entity.MealsEntity
 import com.example.testapplication.util.StringOperation
 import java.util.Date

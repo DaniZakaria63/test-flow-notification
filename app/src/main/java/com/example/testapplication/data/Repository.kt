@@ -2,20 +2,16 @@ package com.example.testapplication.data
 
 import com.example.testapplication.DefaultDispatcherProvider
 import com.example.testapplication.DispatcherProvider
-import com.example.testapplication.api.ResultMeal
 import com.example.testapplication.data.local.MealsDao
 import com.example.testapplication.data.local.NotificationDao
 import com.example.testapplication.data.local.entity.MealsEntity
 import com.example.testapplication.data.model.Meals
-import com.example.testapplication.data.source.DataRepository
 import com.example.testapplication.data.model.NotificationModel
+import com.example.testapplication.data.model.ResultMeal
 import com.example.testapplication.data.model.notifDbToModel
+import com.example.testapplication.data.source.DataRepository
 import com.example.testapplication.data.source.DataSource
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
@@ -42,6 +38,7 @@ class Repository(
         return mealRemoteDataSource.callDetailApi(mealsId)
             .flowOn(dispatcher.io)
             .onStart { Result.Loading }
+            .retry(2)
             .catch { emit(getLocalDetailMeal("id", mealsId)) }
             .map { value -> Result.Success(value.getFirst()) }
     }
@@ -51,6 +48,7 @@ class Repository(
         return mealRemoteDataSource.callRandomAPI()
             .flowOn(dispatcher.io)
             .onStart { Result.Loading }
+            .retry(2)
             .catch { emit(getLocalDetailMeal("random")) }
             .map { value -> Result.Success(value.getFirst()) }
             .onEach { value -> saveLocalMeal(value.data) }

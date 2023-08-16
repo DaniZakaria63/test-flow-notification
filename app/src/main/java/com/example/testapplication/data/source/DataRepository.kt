@@ -1,10 +1,10 @@
 package com.example.testapplication.data.source
 
-import com.example.testapplication.api.ResultMeal
 import com.example.testapplication.data.Result
 import com.example.testapplication.data.local.entity.MealsEntity
 import com.example.testapplication.data.model.Meals
 import com.example.testapplication.data.model.NotificationModel
+import com.example.testapplication.data.model.ResultMeal
 import kotlinx.coroutines.flow.Flow
 
 interface DataRepository {

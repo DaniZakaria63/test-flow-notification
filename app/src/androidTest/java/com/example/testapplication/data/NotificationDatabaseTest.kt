@@ -1,20 +1,18 @@
-package com.example.testapplication
+package com.example.testapplication.data
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
-import androidx.test.filters.SmallTest
 import app.cash.turbine.test
-import com.example.testapplication.data.MainCoroutineRule
+import com.example.testapplication.MainCoroutineRule
 import com.example.testapplication.data.local.MealsDao
 import com.example.testapplication.data.local.NotificationDao
 import com.example.testapplication.data.local.NotificationDatabase
 import com.example.testapplication.data.local.entity.MealsEntity
 import com.example.testapplication.data.local.entity.NotificationEntity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.test.runTest
 import okio.IOException
 import org.hamcrest.MatcherAssert.assertThat
@@ -32,9 +30,6 @@ import org.mockito.Mockito.any
 import org.mockito.Mockito.doThrow
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
-import org.mockito.junit.MockitoJUnit
-import org.mockito.junit.MockitoJUnitRunner
-import java.sql.SQLException
 import java.util.Date
 import kotlin.jvm.Throws
 

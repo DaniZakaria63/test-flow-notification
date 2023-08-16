@@ -56,8 +56,6 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-
-
     fun updateClickedStatus(mealId: Int = 0){
         viewModelScope.launch(dispatcher.main) {
             try {
@@ -69,16 +67,4 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-
-
-    /* Deprecated
-    companion object{
-        val Factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val repository: Repository = (this[APPLICATION_KEY] as TestApp).repository
-                DetailViewModel(repository)
-            }
-        }
-    }
-     */
 }

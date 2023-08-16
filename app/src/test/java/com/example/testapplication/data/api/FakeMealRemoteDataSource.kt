@@ -1,8 +1,7 @@
 package com.example.testapplication.data.api
 
-import com.example.testapplication.api.ResultMeal
-import com.example.testapplication.data.Result
 import com.example.testapplication.data.model.Meals
+import com.example.testapplication.data.model.ResultMeal
 import com.example.testapplication.data.source.DataSource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow

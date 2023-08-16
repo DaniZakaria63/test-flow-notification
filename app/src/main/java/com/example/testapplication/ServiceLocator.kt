@@ -1,31 +1,32 @@
 package com.example.testapplication
 
 import android.content.Context
-import androidx.annotation.VisibleForTesting
 import androidx.room.Room
 import com.example.testapplication.data.Repository
+import com.example.testapplication.data.api.IRemoteSource
 import com.example.testapplication.data.api.RemoteSource
-import com.example.testapplication.data.api.RemoteApi
-import com.example.testapplication.data.local.MealsDao
-import com.example.testapplication.data.local.NotificationDao
 import com.example.testapplication.data.local.NotificationDatabase
 import com.example.testapplication.data.source.DataRepository
+import com.example.testapplication.data.source.DataSource
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.android.scopes.ViewModelScoped
 import dagger.hilt.components.SingletonComponent
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
 @Module
 @InstallIn(SingletonComponent::class)
 object ServiceLocator {
-
+    const val BASE_URL = "https://www.themealdb.com/api/json/"
 
     @Provides
+    @Singleton
     fun provideNotificationDatabase(@ApplicationContext context: Context): NotificationDatabase {
         return Room.databaseBuilder(
             context.applicationContext,
@@ -39,18 +40,47 @@ object ServiceLocator {
 
     @Provides
     @Singleton
-    fun provideRepository(notificationDatabase: NotificationDatabase): DataRepository {
-        return Repository(
-            RemoteSource(RemoteApi.getApi()),
-            notificationDatabase.notificationDao(),
-            notificationDatabase.mealsDao(),
+    fun provideRetrofit(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .client(
+                OkHttpClient.Builder()
+                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC))
+                    .build()
+            )
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideDataSource(retrofit: Retrofit): DataSource {
+        return RemoteSource(
+            retrofit.create(IRemoteSource::class.java)
         )
     }
 
 
     @Provides
     @Singleton
-    fun provideDispatcher() : DispatcherProvider {
+    fun provideRepository(
+        dataSource: DataSource,
+        notificationDatabase: NotificationDatabase,
+        dispatcher: DispatcherProvider
+    ): DataRepository {
+        return Repository(
+            dataSource,
+            notificationDatabase.notificationDao(),
+            notificationDatabase.mealsDao(),
+            dispatcher
+        )
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideDispatcher(): DispatcherProvider {
         return DefaultDispatcherProvider()
     }
 }

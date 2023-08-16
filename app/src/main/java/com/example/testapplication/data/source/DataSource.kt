@@ -1,7 +1,6 @@
 package com.example.testapplication.data.source
 
-import com.example.testapplication.api.ResultMeal
-import com.example.testapplication.data.Result
+import com.example.testapplication.data.model.ResultMeal
 import kotlinx.coroutines.flow.Flow
 
 interface DataSource {
