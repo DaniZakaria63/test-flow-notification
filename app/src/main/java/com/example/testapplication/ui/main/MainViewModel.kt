@@ -54,8 +54,10 @@ class MainViewModel @Inject constructor(
 
 
     /* communication of exception event */
-    private val _exceptionState = MutableSharedFlow<String>(replay = 0)
-    val exceptionState: SharedFlow<String> get() = _exceptionState.asSharedFlow()
+    private val _statusState = MutableSharedFlow<Result<Boolean>>(replay = 0)
+    val statusState: SharedFlow<Result<Boolean>>
+        get() = _statusState.asSharedFlow()
+            .shareIn(viewModelScope, SharingStarted.WhileSubscribed())
 
 
     /* communication of detail notification */
@@ -69,10 +71,7 @@ class MainViewModel @Inject constructor(
     private val _notificationTrigger = MutableSharedFlow<NotificationModel>()
     val notificationTrigger: SharedFlow<NotificationModel>
         get() = _notificationTrigger.asSharedFlow()
-            .onEach { model ->
-                repository.saveLocalNotification(model)
-            }
-            .shareIn(viewModelScope, SharingStarted.WhileSubscribed())
+            .shareIn(viewModelScope, SharingStarted.Lazily)
 
 
     fun setIntentExtra(key: String, value: Int) {
@@ -86,11 +85,16 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch(dispatcher.main) {
             repository.callApiRandomDish()
                 .flowOn(dispatcher.io)
-                .catch { exception ->
-                    _exceptionState.emit(exception.message.toString())
-                }.collect { meals ->
-                    if (meals is Result.Success) {
-                        _notificationTrigger.emit(meals.data.asNotificationModel())
+                .catch { _statusState.emit(Result.Error(it)) }
+                .collect { meals ->
+                    when(meals){
+                        is Result.Success -> {
+                            val data = meals.data.asNotificationModel()
+                            _notificationTrigger.emit(data)
+                            repository.saveLocalNotification(data)
+                        }
+                        is Result.Error -> _statusState.emit(Result.Error(meals.exception))
+                        Result.Loading -> _statusState.emit(Result.Loading)
                     }
                 }
         }
@@ -98,7 +102,7 @@ class MainViewModel @Inject constructor(
 
 
     fun triggerOfflineNotification() {
-        viewModelScope.launch(dispatcher.main) {
+        errorHandler {
             _notificationTrigger.emit(DummyNotificationHelper().getOne())
         }
     }
@@ -111,27 +115,42 @@ class MainViewModel @Inject constructor(
 
             repository.getAllNotification()
                 .flowOn(dispatcher.io)
-                .onStart { UiState<List<Meals>>(isLoading = true) }
-                .catch { UiState<List<Meals>>(isLoading = false) }
+                .onStart { _allListData.emit(UiState(isLoading = true)) }
+                .catch { _allListData.emit(UiState(isError = false)) }
                 .collect { models ->
-                    if (models is Result.Success) _allListData.emit(
-                        UiState(dataList = models.data.sortedByDescending { it.id })
-                    )
+                    when (models) {
+                        is Result.Success -> _allListData.emit(
+                            UiState(dataList = models.data.sortedByDescending { it.id })
+                        )
+
+                        is Result.Error -> _allListData.emit(UiState(isError = true))
+                        Result.Loading -> _allListData.emit(UiState(isLoading = true))
+                    }
                 }
         }
     }
 
 
     fun updateNotifySeenStatus() {
-        viewModelScope.launch(dispatcher.main) {
+        errorHandler{
             repository.updateNotifSeenStatus(true)
         }
     }
 
 
     fun clearNotificationList() {
-        viewModelScope.launch(dispatcher.main) {
+        errorHandler {
             _allListData.emit(UiState(isLoading = true))
+        }
+    }
+
+    private val errorHandler: ( suspend () -> Unit) -> Unit = { emit ->
+        viewModelScope.launch(dispatcher.main) {
+            try {
+                emit()
+            }catch (e: Throwable){
+                _statusState.emit(Result.Error(e))
+            }
         }
     }
 }
