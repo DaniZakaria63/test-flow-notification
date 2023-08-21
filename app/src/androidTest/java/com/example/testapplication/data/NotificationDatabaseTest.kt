@@ -6,7 +6,7 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import app.cash.turbine.test
-import com.example.testapplication.MainCoroutineRule
+import com.example.testapplication.configuration.MainCoroutineRule
 import com.example.testapplication.data.local.MealsDao
 import com.example.testapplication.data.local.NotificationDao
 import com.example.testapplication.data.local.NotificationDatabase

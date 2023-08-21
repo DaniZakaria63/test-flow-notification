@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import okio.IOException
 import javax.inject.Inject
 
 
@@ -103,7 +104,9 @@ class MainViewModel @Inject constructor(
 
     fun triggerOfflineNotification() {
         errorHandler {
-            _notificationTrigger.emit(DummyNotificationHelper().getOne())
+            val oneData = DummyNotificationHelper().getOne()
+            _notificationTrigger.emit(oneData)
+            repository.saveLocalNotification(oneData)
         }
     }
 

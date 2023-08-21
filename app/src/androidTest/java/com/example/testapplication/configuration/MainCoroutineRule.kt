@@ -1,4 +1,4 @@
-package com.example.testapplication
+package com.example.testapplication.configuration
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
