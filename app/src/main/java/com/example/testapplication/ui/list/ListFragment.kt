@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -14,15 +15,18 @@ import com.example.testapplication.data.Status
 import com.example.testapplication.databinding.FragmentListBinding
 import com.example.testapplication.ui.main.MainViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ListFragment : Fragment() {
+class ListFragment @Inject constructor(var _mainViewModel: MainViewModel?) : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
-    private val mainViewModel: MainViewModel by activityViewModels()
+    private val mainViewModel get()= _mainViewModel!!
+//    private val mainViewModel: MainViewModel by activityViewModels()
     private lateinit var listAdapter: ListAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        _mainViewModel = _mainViewModel?:ViewModelProvider(requireActivity())[MainViewModel::class.java]
         listAdapter = ListAdapter { mealId ->
             mainViewModel.setIntentExtra("ID", mealId)
         }

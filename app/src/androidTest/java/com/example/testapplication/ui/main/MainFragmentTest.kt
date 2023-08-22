@@ -114,6 +114,10 @@ class MainFragmentTest {
             cancelAndIgnoreRemainingEvents()
         }
 
+        repository.getAllNotification().test {
+            assertThat((awaitItem() as Result.Success).data.size, `is`(1))
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
 
