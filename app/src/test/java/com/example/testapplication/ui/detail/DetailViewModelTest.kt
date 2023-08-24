@@ -8,14 +8,12 @@ import com.example.testapplication.data.Result
 import com.example.testapplication.data.model.Meals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.hamcrest.CoreMatchers.equalTo
 import org.hamcrest.CoreMatchers.instanceOf
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.notNullValue
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -35,7 +33,7 @@ import java.io.IOException
 class DetailViewModelTest {
     private val dummyOneData = Meals(idMeal = 99)
     private lateinit var dispatcher: TestCoroutineDispatcher
-    private lateinit var detailViewModel: DetailViewModel
+    private lateinit var defaultDetailViewModel: DefaultDetailViewModel
 
     @Mock
     private lateinit var repository: Repository
@@ -46,7 +44,7 @@ class DetailViewModelTest {
     @Before
     fun setUp() {
         dispatcher = TestCoroutineDispatcher()
-        detailViewModel = DetailViewModel(repository, dispatcher)
+        defaultDetailViewModel = DefaultDetailViewModel(repository, dispatcher)
     }
 
     @Test
@@ -59,15 +57,15 @@ class DetailViewModelTest {
         ).`when`(repository).getDetailMeal(anyInt())
 
         // When trigger
-        detailViewModel.callDetail(anyInt())
+        defaultDetailViewModel.callDetail(anyInt())
 
         // Then check all these things going
-        detailViewModel.mealData.test {
+        defaultDetailViewModel.mealData.test {
             assertThat(awaitItem(), equalTo(dummyOneData)) // incoming data event
             cancelAndIgnoreRemainingEvents()
         }
 
-        detailViewModel.statusState.test {
+        defaultDetailViewModel.statusState.test {
             assertThat(awaitItem(), instanceOf(Result.Loading::class.java)) // was never called
             cancelAndIgnoreRemainingEvents()
         }
@@ -88,14 +86,14 @@ class DetailViewModelTest {
         ).`when`(repository).getDetailMeal(anyInt())
 
         // When triggering
-        detailViewModel.callDetail(anyInt())
+        defaultDetailViewModel.callDetail(anyInt())
 
         // Then check the response
-        detailViewModel.mealData.test {
+        defaultDetailViewModel.mealData.test {
             assertThat(awaitItem(), equalTo(Meals(0))) // default state
             cancelAndIgnoreRemainingEvents()
         }
-        detailViewModel.statusState.test {
+        defaultDetailViewModel.statusState.test {
             assertThat(awaitItem(), equalTo(Result.Error(throwError)))
             cancelAndIgnoreRemainingEvents()
         }
@@ -113,14 +111,14 @@ class DetailViewModelTest {
         ).`when`(repository).getDetailMeal(anyInt())
 
         // When triggering
-        detailViewModel.callDetail(anyInt())
+        defaultDetailViewModel.callDetail(anyInt())
 
         // Then check the response
-        detailViewModel.statusState.test {
+        defaultDetailViewModel.statusState.test {
             assertThat(awaitItem(), equalTo(Result.Loading))
             cancelAndIgnoreRemainingEvents()
         }
-        detailViewModel.mealData.test {
+        defaultDetailViewModel.mealData.test {
             assertThat(awaitItem(), equalTo(Meals(0))) // default state, should be
             cancelAndIgnoreRemainingEvents()
         }
@@ -139,7 +137,7 @@ class DetailViewModelTest {
         }.`when`(repository).updateNotifClickedStatus(anyInt())
 
         // When trigger
-        detailViewModel.updateClickedStatus(dummyOneData.idMeal)
+        defaultDetailViewModel.updateClickedStatus(dummyOneData.idMeal)
 
         // Then
         verify(repository).updateNotifClickedStatus(anyInt())
@@ -155,9 +153,9 @@ class DetailViewModelTest {
         }.`when`(repository).updateNotifClickedStatus(anyInt())
          */
 
-        detailViewModel.updateClickedStatus(0)
+        defaultDetailViewModel.updateClickedStatus(0)
 
-        detailViewModel.statusState.test {
+        defaultDetailViewModel.statusState.test {
             // different object and given error, still wondering why that happened
             // assertThat(awaitItem(), `is`(Result.Error(throwError)))
             assertThat(awaitItem(), instanceOf(Result.Error::class.java))
@@ -173,9 +171,9 @@ class DetailViewModelTest {
             throw IOException("database closed")
         }.`when`(repository).updateNotifClickedStatus(anyInt())
 
-        detailViewModel.updateClickedStatus(dummyOneData.idMeal)
+        defaultDetailViewModel.updateClickedStatus(dummyOneData.idMeal)
 
-        detailViewModel.statusState.test {
+        defaultDetailViewModel.statusState.test {
             assertThat(awaitItem(), instanceOf(Result.Error::class.java))
             cancelAndIgnoreRemainingEvents()
         }
@@ -190,12 +188,12 @@ class DetailViewModelTest {
             Result.Loading
         )).`when`(repository).getDetailMeal(anyInt())
 
-        detailViewModel.callDetail(anyInt())
-        detailViewModel.statusState.test {
+        defaultDetailViewModel.callDetail(anyInt())
+        defaultDetailViewModel.statusState.test {
             assertThat(awaitItem(), `is`(Result.Loading))
             cancelAndIgnoreRemainingEvents()
         }
-        detailViewModel.ingredientData.test {
+        defaultDetailViewModel.ingredientData.test {
             assertThat(awaitItem(), `is`(default))
             cancelAndIgnoreRemainingEvents()
         }
@@ -219,13 +217,13 @@ class DetailViewModelTest {
             Result.Success(oneData)
         )).`when`(repository).getDetailMeal(anyInt())
 
-        detailViewModel.callDetail(oneData.idMeal)
-        detailViewModel.mealData.test {
+        defaultDetailViewModel.callDetail(oneData.idMeal)
+        defaultDetailViewModel.mealData.test {
             assertThat(awaitItem(), equalTo(oneData))
             cancelAndIgnoreRemainingEvents()
         }
 
-        detailViewModel.ingredientData.test {
+        defaultDetailViewModel.ingredientData.test {
             val data = awaitItem()!! // given data
             assertThat(data.size, `is`(3))
             assertThat(data[0].first, `is`("salt"))

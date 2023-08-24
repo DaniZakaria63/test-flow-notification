@@ -30,5 +30,7 @@ object FakeMealsToJson {
 
     fun anotherSingleToJson(): String = Gson().toJson(ResultMeal(listOf(anotherSingleMeals)))
 
+    fun customToJson(meals: Meals): String = Gson().toJson(ResultMeal(listOf(meals)))
+
     fun baseSingleMealsToJson(): String = Gson().toJson(baseSingleMeals)
 }

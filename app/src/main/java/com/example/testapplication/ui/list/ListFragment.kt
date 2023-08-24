@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -13,11 +12,11 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.testapplication.data.Status
 import com.example.testapplication.databinding.FragmentListBinding
-import com.example.testapplication.ui.main.MainViewModel
+import com.example.testapplication.ui.base.MainViewModel
+import com.example.testapplication.ui.main.DefaultMainViewModel
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class ListFragment @Inject constructor(var _mainViewModel: MainViewModel?) : Fragment() {
+class ListFragment constructor(var _mainViewModel: MainViewModel?) : Fragment() {
     private var _binding: FragmentListBinding? = null
     private val binding get() = _binding!!
     private val mainViewModel get()= _mainViewModel!!
@@ -26,8 +25,8 @@ class ListFragment @Inject constructor(var _mainViewModel: MainViewModel?) : Fra
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        _mainViewModel = _mainViewModel?:ViewModelProvider(requireActivity())[MainViewModel::class.java]
-        listAdapter = ListAdapter { mealId ->
+        _mainViewModel = _mainViewModel?:ViewModelProvider(requireActivity())[DefaultMainViewModel::class.java]
+        listAdapter = ListAdapter(requireContext()) { mealId ->
             mainViewModel.setIntentExtra("ID", mealId)
         }
     }

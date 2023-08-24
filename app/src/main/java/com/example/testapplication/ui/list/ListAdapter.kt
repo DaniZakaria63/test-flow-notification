@@ -1,5 +1,6 @@
 package com.example.testapplication.ui.list
 
+import android.content.Context
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -11,12 +12,29 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
 import com.example.testapplication.R
 import com.example.testapplication.data.model.NotificationModel
+import dagger.hilt.EntryPoint
+import dagger.hilt.InstallIn
+import dagger.hilt.android.EntryPointAccessors
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Inject
 
-class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
+class ListAdapter(context: Context, private val callback: (idMeal: Int) -> Unit) :
     RecyclerView.Adapter<ListAdapter.ViewHolder>() {
     private val datas = mutableListOf<NotificationModel>()
+    private var glideInstance: RequestManager
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface ListAdapterEntryPoint{
+        fun getGlideInstance(): RequestManager
+    }
+    init {
+        val entryPoint = EntryPointAccessors.fromApplication(context, ListAdapterEntryPoint::class.java)
+        glideInstance = entryPoint.getGlideInstance()
+    }
 
     fun updateData(newData: MutableList<NotificationModel>) {
         val diffResult: DiffUtil.DiffResult =
@@ -45,10 +63,9 @@ class ListAdapter(private val callback: (idMeal: Int) -> Unit) :
         holder.txtStatus.setTextColor(if(data.isClicked) Color.BLUE else Color.DKGRAY)
         if(data.isSeen) holder.divNotif.setBackgroundColor(Color.parseColor("#dadada"))
 
-        Glide.with(holder.itemView)
-            .load(if (data.id == 0) R.drawable.dummy else data.img_remote)
-            .placeholder(android.R.drawable.ic_menu_gallery)
-            .into(holder.imgAvatar)
+        glideInstance.load(
+            if (data.id == 0) R.drawable.dummy else data.img_remote
+        ).into(holder.imgAvatar)
     }
 
     override fun getItemCount(): Int = datas.size

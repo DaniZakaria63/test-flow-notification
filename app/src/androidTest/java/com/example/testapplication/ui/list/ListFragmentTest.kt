@@ -1,7 +1,6 @@
 package com.example.testapplication.ui.list
 
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.assertThat
@@ -13,8 +12,6 @@ import androidx.test.filters.LargeTest
 import app.cash.turbine.test
 import com.example.testapplication.DefaultDispatcherProvider
 import com.example.testapplication.ServiceLocator
-import com.example.testapplication.configuration.TestCoroutineDispatcher
-import com.example.testapplication.configuration.TestFragmentFactory
 import com.example.testapplication.configuration.launchFragmentInHiltContainer
 import com.example.testapplication.R
 import com.example.testapplication.data.Result
@@ -22,7 +19,9 @@ import com.example.testapplication.data.source.DataRepository
 import com.example.testapplication.data.source.DummyNotificationHelper
 import com.example.testapplication.ui.assertion.RecyclerViewItemCount.Companion.withItemCount
 import com.example.testapplication.ui.assertion.RecyclerViewItemMatcher
-import com.example.testapplication.ui.main.MainViewModel
+import com.example.testapplication.ui.base.MainViewModel
+import com.example.testapplication.ui.main.DefaultMainViewModel
+import com.example.testapplication.util.DefaultFragmentFactory
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -39,7 +38,6 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.kotlin.isNull
-import java.util.concurrent.CompletableFuture
 import javax.inject.Inject
 
 
@@ -48,7 +46,7 @@ import javax.inject.Inject
 @UninstallModules(ServiceLocator::class)
 class ListFragmentTest {
     private val dummyNotificationHelper = DummyNotificationHelper()
-    lateinit var mainViewModel: MainViewModel
+    lateinit var defaultMainViewModel: MainViewModel
 
     @Inject
     @Mock
@@ -64,11 +62,11 @@ class ListFragmentTest {
     @Before
     fun setUp() {
         hiltRule.inject()
-        mainViewModel = MainViewModel(repository, DefaultDispatcherProvider())
+        defaultMainViewModel = DefaultMainViewModel(repository, DefaultDispatcherProvider())
         launchFragmentInHiltContainer<ListFragment>(
-            fragmentFactory = TestFragmentFactory(mainViewModel)
+            fragmentFactory = DefaultFragmentFactory(defaultMainViewModel)
         ){
-            this@ListFragmentTest.mainViewModel = this._mainViewModel!!
+            this@ListFragmentTest.defaultMainViewModel = this._mainViewModel!!
         }
     }
 
@@ -92,7 +90,7 @@ class ListFragmentTest {
                 repository.saveLocalNotification(dummies[it])
             }
             launch {
-                mainViewModel.refreshNotificationList()
+                defaultMainViewModel.refreshNotificationList()
             }
         }
 
@@ -118,12 +116,12 @@ class ListFragmentTest {
 
         val preface = async {
             repository.saveLocalNotification(oneData)
-            mainViewModel.refreshNotificationList()
+            defaultMainViewModel.refreshNotificationList()
         }
 
         preface.await()
         // item view must clicked
-        mainViewModel.intentExtra.test {
+        defaultMainViewModel.intentExtra.test {
 
             onView(allOf(withId(R.id.recycler_view), isDisplayed()))
                 .perform(RecyclerViewActions.actionOnItemAtPosition<ListAdapter.ViewHolder>(
@@ -142,13 +140,13 @@ class ListFragmentTest {
 
         val preface = async {
             repository.saveLocalNotification(oneData)
-            mainViewModel.updateNotifySeenStatus()
-            mainViewModel.refreshNotificationList()
+            defaultMainViewModel.updateNotifySeenStatus()
+            defaultMainViewModel.refreshNotificationList()
         }
 
         // using onData to check the model value
         preface.await()
-        mainViewModel.allListData.test {
+        defaultMainViewModel.allListData.test {
             assertThat(isNull(), `is`(awaitItem().dataList))
             val item = awaitItem()
             assertThat(item.dataList?.size, `is`(1))

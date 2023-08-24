@@ -14,29 +14,42 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.TaskStackBuilder
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.testapplication.R
 import com.example.testapplication.TestApp.Companion.NOTIFICATION_CHANNEL_ID
 import com.example.testapplication.data.model.NotificationModel
+import com.example.testapplication.ui.base.MainViewModel
 import com.example.testapplication.ui.detail.DetailActivity
+import com.example.testapplication.util.DefaultFragmentFactory
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Named
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
-    private val mainViewModel: MainViewModel by viewModels()
+
+    @Inject
+    @Named("MainViewModelFactory")
+    lateinit var factory: ViewModelProvider.Factory
+
+    private val mainViewModel: MainViewModel by viewModels(factoryProducer = {factory})
     private lateinit var navigation: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportFragmentManager.fragmentFactory = DefaultFragmentFactory(mainViewModel)
+
         setContentView(R.layout.activity_main)
 
-        val navController = findNavController(R.id.nav_host_fragment)
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
+        val navController = navHostFragment.navController
         navigation = findViewById(R.id.bottom_nav_view)
         navigation.setupWithNavController(navController)
 

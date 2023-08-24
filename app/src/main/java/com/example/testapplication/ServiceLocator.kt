@@ -2,6 +2,8 @@ package com.example.testapplication
 
 import android.content.Context
 import androidx.room.Room
+import com.bumptech.glide.Glide
+import com.bumptech.glide.request.RequestOptions
 import com.example.testapplication.data.Repository
 import com.example.testapplication.data.api.IRemoteSource
 import com.example.testapplication.data.api.RemoteSource
@@ -83,4 +85,13 @@ object ServiceLocator {
     fun provideDispatcher(): DispatcherProvider {
         return DefaultDispatcherProvider()
     }
+
+    @Provides
+    @Singleton
+    fun provideGlideInstance(@ApplicationContext context: Context) =
+        Glide.with(context).setDefaultRequestOptions(
+            RequestOptions()
+                .placeholder(R.drawable.dummy)
+                .error(R.drawable.shiba)
+        )
 }

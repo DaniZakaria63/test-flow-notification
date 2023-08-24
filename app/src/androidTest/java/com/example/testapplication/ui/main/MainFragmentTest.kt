@@ -20,15 +20,14 @@ import com.example.testapplication.R
 import com.example.testapplication.ServiceLocator
 import com.example.testapplication.configuration.ExpressoIdlingResource
 import com.example.testapplication.configuration.TestCoroutineDispatcher
-import com.example.testapplication.configuration.TestFragmentFactory
 import com.example.testapplication.configuration.launchFragmentInHiltContainer
 import com.example.testapplication.data.Result
 import com.example.testapplication.data.api.FakeMealsToJson
 import com.example.testapplication.data.source.DataRepository
+import com.example.testapplication.util.DefaultFragmentFactory
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -52,7 +51,7 @@ class MainFragmentTest {
     private val fakeMeals = FakeMealsToJson
     private lateinit var context: Context
 
-    lateinit var mainViewModel: MainViewModel
+    lateinit var defaultMainViewModel: DefaultMainViewModel
 
     @Inject @Mock
     lateinit var repository: DataRepository
@@ -70,8 +69,8 @@ class MainFragmentTest {
         context = InstrumentationRegistry.getInstrumentation().targetContext
 
         hiltRule.inject()
-        mainViewModel = MainViewModel(repository, TestCoroutineDispatcher())
-        launchFragmentInHiltContainer<MainFragment>(fragmentFactory = TestFragmentFactory(mainViewModel))
+        defaultMainViewModel = DefaultMainViewModel(repository, TestCoroutineDispatcher())
+        launchFragmentInHiltContainer<MainFragment>(fragmentFactory = DefaultFragmentFactory(defaultMainViewModel))
     }
 
 
@@ -107,7 +106,7 @@ class MainFragmentTest {
     @Test
     fun triggerOfflineNotification_checkStateViewModel_shouldSuccess() = runTest {
 
-        mainViewModel.notificationTrigger.test {
+        defaultMainViewModel.notificationTrigger.test {
             onView(withId(R.id.button)).perform(click())
 
             assertThat(awaitItem(), notNullValue())

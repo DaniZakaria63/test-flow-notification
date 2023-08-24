@@ -10,7 +10,6 @@ import com.example.testapplication.data.model.Meals
 import com.example.testapplication.data.model.NotificationModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.test.runTest
 import okio.IOException
 import org.hamcrest.CoreMatchers.equalTo
@@ -25,7 +24,6 @@ import org.mockito.ArgumentMatchers.anyBoolean
 import org.mockito.Mock
 import org.mockito.junit.MockitoJUnitRunner
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.verify
@@ -34,7 +32,7 @@ import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(MockitoJUnitRunner::class)
-class MainViewModelTest {
+class DefaultMainViewModelTest {
     private val dummyList: MutableList<NotificationModel> = mutableListOf(
         NotificationModel(id = 3, mealId = 1, arrived = Date(), isSeen = true),
         NotificationModel(id = 2, mealId = 1, arrived = Date()),
@@ -42,7 +40,7 @@ class MainViewModelTest {
     )
 
     private lateinit var dispatcher: TestCoroutineDispatcher
-    private lateinit var mainViewModel: MainViewModel
+    private lateinit var defaultMainViewModel: DefaultMainViewModel
 
     @Mock
     private lateinit var repository: Repository
@@ -53,7 +51,7 @@ class MainViewModelTest {
     @Before
     fun setUp() {
         dispatcher = TestCoroutineDispatcher()
-        mainViewModel = MainViewModel(repository, dispatcher)
+        defaultMainViewModel = DefaultMainViewModel(repository, dispatcher)
     }
 
 
@@ -64,8 +62,8 @@ class MainViewModelTest {
             Result.Success(dummyList)
         )).`when`(repository).getAllNotification()
 
-        mainViewModel.refreshNotificationList()
-        mainViewModel.allListData.test {
+        defaultMainViewModel.refreshNotificationList()
+        defaultMainViewModel.allListData.test {
             assertThat(awaitItem(), `is`(UiState(dataList = dummyList)))
             cancelAndIgnoreRemainingEvents()
         }
@@ -82,8 +80,8 @@ class MainViewModelTest {
             Result.Error(throwError)
         )).`when`(repository).getAllNotification()
 
-        mainViewModel.refreshNotificationList()
-        mainViewModel.allListData.test {
+        defaultMainViewModel.refreshNotificationList()
+        defaultMainViewModel.allListData.test {
             assertThat(awaitItem(), `is`(UiState(isError = true)))
             cancelAndIgnoreRemainingEvents()
         }
@@ -97,8 +95,8 @@ class MainViewModelTest {
             Result.Loading
         )).`when`(repository).getAllNotification()
 
-        mainViewModel.refreshNotificationList()
-        mainViewModel.allListData.test {
+        defaultMainViewModel.refreshNotificationList()
+        defaultMainViewModel.allListData.test {
             assertThat(awaitItem(), `is`(UiState(isLoading = true)))
             cancelAndIgnoreRemainingEvents()
         }
@@ -120,8 +118,8 @@ class MainViewModelTest {
             assertThat(data.mealId, equalTo(oneData.idMeal))
         }.`when`(repository).saveLocalNotification(any())
 
-        mainViewModel.notificationTrigger.test {
-            mainViewModel.triggerPushOnlineNotify()
+        defaultMainViewModel.notificationTrigger.test {
+            defaultMainViewModel.triggerPushOnlineNotify()
 
             assertThat(awaitItem().mealId, `is`(resultData.mealId))
             cancelAndIgnoreRemainingEvents()
@@ -139,8 +137,8 @@ class MainViewModelTest {
             Result.Error(throwError)
         )).`when`(repository).callApiRandomDish()
 
-        mainViewModel.statusState.test {
-            mainViewModel.triggerPushOnlineNotify()
+        defaultMainViewModel.statusState.test {
+            defaultMainViewModel.triggerPushOnlineNotify()
             assertThat(awaitItem(), `is`(Result.Error(throwError)))
             cancelAndIgnoreRemainingEvents()
         }
@@ -154,8 +152,8 @@ class MainViewModelTest {
             Result.Loading
         )).`when`(repository).callApiRandomDish()
 
-        mainViewModel.statusState.test {
-            mainViewModel.triggerPushOnlineNotify()
+        defaultMainViewModel.statusState.test {
+            defaultMainViewModel.triggerPushOnlineNotify()
             assertThat(awaitItem(), `is`(Result.Loading))
             cancelAndIgnoreRemainingEvents()
         }
@@ -170,7 +168,7 @@ class MainViewModelTest {
             assertThat(status, `is`(true))
         }.`when`(repository).updateNotifSeenStatus(anyBoolean())
 
-        mainViewModel.updateNotifySeenStatus()
+        defaultMainViewModel.updateNotifySeenStatus()
 
         verify(repository).updateNotifSeenStatus(anyBoolean())
     }
@@ -182,8 +180,8 @@ class MainViewModelTest {
 
         doAnswer { throw throwError }.`when`(repository).updateNotifSeenStatus(anyBoolean())
 
-        mainViewModel.statusState.test {
-            mainViewModel.updateNotifySeenStatus()
+        defaultMainViewModel.statusState.test {
+            defaultMainViewModel.updateNotifySeenStatus()
             assertThat(awaitItem(), `is`(Result.Error(throwError)))
             cancelAndIgnoreRemainingEvents()
         }
@@ -197,8 +195,8 @@ class MainViewModelTest {
         val extraKey = "ID"
         val extraValue = 1
 
-        mainViewModel.intentExtra.test {
-            mainViewModel.setIntentExtra(extraKey, extraValue)
+        defaultMainViewModel.intentExtra.test {
+            defaultMainViewModel.setIntentExtra(extraKey, extraValue)
             assertThat(awaitItem()[extraKey], `is`(extraValue))
             cancelAndIgnoreRemainingEvents()
         }
@@ -212,8 +210,8 @@ class MainViewModelTest {
             Result.Success(dummyList)
         )).`when`(repository).getAllNotification()
 
-        mainViewModel.refreshNotificationList()
-        mainViewModel.badgesCount.test {
+        defaultMainViewModel.refreshNotificationList()
+        defaultMainViewModel.badgesCount.test {
             assertThat(awaitItem(), `is`(2)) // just one has been seen
             cancelAndIgnoreRemainingEvents()
         }

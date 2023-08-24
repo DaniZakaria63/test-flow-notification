@@ -2,8 +2,12 @@ package com.example.testapplication.configuration
 
 import android.content.Context
 import androidx.room.Room
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestManager
+import com.bumptech.glide.request.RequestOptions
 import com.example.testapplication.DefaultDispatcherProvider
 import com.example.testapplication.DispatcherProvider
+import com.example.testapplication.R
 import com.example.testapplication.ServiceLocator
 import com.example.testapplication.data.Repository
 import com.example.testapplication.data.api.IRemoteSource
@@ -84,4 +88,16 @@ class TestServiceLocator {
     fun provideDispatcher(): DispatcherProvider {
         return DefaultDispatcherProvider()
     }
+
+
+    @Provides
+    @Singleton
+    fun provideGlideInstance(
+        @ApplicationContext context: Context
+    ) : RequestManager =
+        Glide.with(context).setDefaultRequestOptions(
+            RequestOptions()
+                .placeholder(R.drawable.dummy)
+                .error(R.drawable.shiba)
+        )
 }
