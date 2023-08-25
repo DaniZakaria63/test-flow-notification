@@ -1,4 +1,4 @@
-package com.example.testapplication.ui.assertion
+package com.example.testapplication.espresso.assertion
 
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView

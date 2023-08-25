@@ -1,4 +1,4 @@
-package com.example.testapplication.configuration
+package com.example.testapplication.di
 
 import android.content.ComponentName
 import android.content.Intent

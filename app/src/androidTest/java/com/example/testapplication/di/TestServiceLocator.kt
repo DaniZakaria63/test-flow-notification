@@ -1,4 +1,4 @@
-package com.example.testapplication.configuration
+package com.example.testapplication.di
 
 import android.content.Context
 import androidx.room.Room
@@ -16,12 +16,10 @@ import com.example.testapplication.data.local.NotificationDatabase
 import com.example.testapplication.data.source.DataRepository
 import com.example.testapplication.data.source.DataSource
 import com.google.gson.GsonBuilder
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dagger.hilt.migration.DisableInstallInCheck
 import dagger.hilt.testing.TestInstallIn
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -30,7 +28,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
-@Module
+@Module(includes = [TestViewModelProvider::class])
 @TestInstallIn(
     components = [SingletonComponent::class],
     replaces = [ServiceLocator::class]

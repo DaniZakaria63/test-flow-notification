@@ -39,8 +39,8 @@ class MainActivity : AppCompatActivity() {
     @Named("MainViewModelFactory")
     lateinit var factory: ViewModelProvider.Factory
 
-    private val mainViewModel: MainViewModel by viewModels(factoryProducer = {factory})
-    private lateinit var navigation: BottomNavigationView
+    val mainViewModel: MainViewModel by viewModels(factoryProducer = {factory})
+    lateinit var navigation: BottomNavigationView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

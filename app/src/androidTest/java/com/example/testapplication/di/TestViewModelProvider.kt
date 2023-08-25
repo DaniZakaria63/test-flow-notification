@@ -1,4 +1,4 @@
-package com.example.testapplication.configuration
+package com.example.testapplication.di
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -12,7 +12,6 @@ import dagger.Provides
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.hilt.testing.TestInstallIn
 import javax.inject.Named
-import javax.inject.Qualifier
 
 
 @Module

@@ -48,7 +48,6 @@ class Repository(
         return mealRemoteDataSource.callRandomAPI()
             .flowOn(dispatcher.io)
             .onStart { Result.Loading }
-            .retry(2)
             .catch { emit(getLocalDetailMeal("random")) }
             .map { value -> Result.Success(value.getFirst()) }
             .onEach { value -> saveLocalMeal(value.data) }
@@ -67,7 +66,10 @@ class Repository(
 
 
     override suspend fun getLocalDetailMeal(type: String, id: Int): ResultMeal {
-        val result = if (type == "random") getLocalRandom() else getLocalById(id)
+        var result: MealsEntity? = if (type == "random") getLocalRandom() else getLocalById(id)
+        if(result?.asDataModel() == null)
+            result = MealsEntity(id = 0, strMeal = "empty")
+//            throw NoSuchElementException("No data for local meal")
         return ResultMeal(listOf(result.asDataModel()))
     }
 

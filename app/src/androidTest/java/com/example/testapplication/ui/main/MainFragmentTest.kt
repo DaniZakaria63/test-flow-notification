@@ -18,9 +18,9 @@ import androidx.test.platform.app.InstrumentationRegistry
 import app.cash.turbine.test
 import com.example.testapplication.R
 import com.example.testapplication.ServiceLocator
-import com.example.testapplication.configuration.ExpressoIdlingResource
+import com.example.testapplication.espresso.EspressoIdlingResource
 import com.example.testapplication.configuration.TestCoroutineDispatcher
-import com.example.testapplication.configuration.launchFragmentInHiltContainer
+import com.example.testapplication.di.launchFragmentInHiltContainer
 import com.example.testapplication.data.Result
 import com.example.testapplication.data.api.FakeMealsToJson
 import com.example.testapplication.data.source.DataRepository
@@ -64,7 +64,7 @@ class MainFragmentTest {
 
     @Before
     fun setUp() {
-        IdlingRegistry.getInstance().register(ExpressoIdlingResource.idlingResource)
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.idlingResource)
         IdlingPolicies.setIdlingResourceTimeout(1, TimeUnit.MINUTES)
         context = InstrumentationRegistry.getInstrumentation().targetContext
 
@@ -77,29 +77,7 @@ class MainFragmentTest {
     @After
     fun tearDown() {
         mockWebServer.shutdown()
-        IdlingRegistry.getInstance().unregister(ExpressoIdlingResource.idlingResource)
-    }
-
-
-    @Ignore("Resource of notification access")
-    @Test
-    fun notificationAccess() = runTest {
-        val manager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        with(manager.activeNotifications.first()) {
-            println("${this.id} and ${this.notification.extras[Notification.EXTRA_TEXT]}")
-        }
-
-        onView(isRoot()).perform(object : ViewAction {
-            override fun getDescription(): String = "Wait for delay"
-
-            override fun getConstraints(): Matcher<View> = isRoot()
-
-            override fun perform(uiController: UiController?, view: View?) {
-                uiController?.loopMainThreadForAtLeast(3000)
-            }
-
-        })
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.idlingResource)
     }
 
 

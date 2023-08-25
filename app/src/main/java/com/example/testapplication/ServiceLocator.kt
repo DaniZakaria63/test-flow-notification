@@ -10,6 +10,7 @@ import com.example.testapplication.data.api.RemoteSource
 import com.example.testapplication.data.local.NotificationDatabase
 import com.example.testapplication.data.source.DataRepository
 import com.example.testapplication.data.source.DataSource
+import com.example.testapplication.util.DefaultViewModelFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
-@Module
+@Module(includes = [DefaultViewModelFactory::class])
 @InstallIn(SingletonComponent::class)
 object ServiceLocator {
     const val BASE_URL = "https://www.themealdb.com/api/json/"

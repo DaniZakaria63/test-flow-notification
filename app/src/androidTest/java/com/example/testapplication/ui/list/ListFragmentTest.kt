@@ -12,13 +12,13 @@ import androidx.test.filters.LargeTest
 import app.cash.turbine.test
 import com.example.testapplication.DefaultDispatcherProvider
 import com.example.testapplication.ServiceLocator
-import com.example.testapplication.configuration.launchFragmentInHiltContainer
+import com.example.testapplication.di.launchFragmentInHiltContainer
 import com.example.testapplication.R
 import com.example.testapplication.data.Result
 import com.example.testapplication.data.source.DataRepository
 import com.example.testapplication.data.source.DummyNotificationHelper
-import com.example.testapplication.ui.assertion.RecyclerViewItemCount.Companion.withItemCount
-import com.example.testapplication.ui.assertion.RecyclerViewItemMatcher
+import com.example.testapplication.espresso.assertion.RecyclerViewItemCount.Companion.withItemCount
+import com.example.testapplication.espresso.assertion.RecyclerViewItemMatcher
 import com.example.testapplication.ui.base.MainViewModel
 import com.example.testapplication.ui.main.DefaultMainViewModel
 import com.example.testapplication.util.DefaultFragmentFactory

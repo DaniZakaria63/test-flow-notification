@@ -19,9 +19,14 @@ class DummyNotificationHelper {
         addNotification("Never Gonna Give", "Ohh give you up", false, false)
     }
 
-    fun getOne() : NotificationModel{
-        val index = (0..9).random()
-        return datas[index]
+    fun getOne() : NotificationModel = datas.random()
+
+    fun getSeveral(count: Int) : List<NotificationModel> {
+        val current = mutableListOf<NotificationModel>()
+        repeat(count) {
+            current.add(getOne())
+        }
+        return current
     }
 
     private fun addNotification(
