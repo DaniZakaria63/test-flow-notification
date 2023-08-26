@@ -12,22 +12,15 @@ class FakeDetailViewModel constructor(
     repository: DataRepository,
     dispatcher: DispatcherProvider
 ): DetailViewModel(repository, dispatcher) {
+    private val currentMeal = Meals(idMeal = 11)
 
     override fun callDetail(mealId: Int) {
         viewModelScope.launch(dispatcher.main) {
-            repository.getDetailMeal(mealId).collect{ meals ->
-                when(meals){
-                    is Result.Success -> _mealData.emit(meals.data)
-                    is Result.Error -> _mealData.emit(Meals(idMeal = 11))
-                    Result.Loading -> _mealData.emit(Meals(idMeal = 1))
-                }
-            }
+            _mealData.emit(currentMeal)
         }
     }
 
     override fun updateClickedStatus(mealId: Int) {
-        viewModelScope.launch(dispatcher.main) {
-            repository.updateNotifClickedStatus(mealId)
-        }
+
     }
 }

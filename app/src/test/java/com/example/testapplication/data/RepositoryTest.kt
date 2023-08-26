@@ -1,21 +1,46 @@
 package com.example.testapplication.data
 
+import app.cash.turbine.test
 import com.example.testapplication.TestCoroutineDispatcher
 import com.example.testapplication.data.api.FakeMealRemoteDataSource
 import com.example.testapplication.data.local.FakeMealsDao
 import com.example.testapplication.data.local.FakeNotificationDao
+import com.example.testapplication.data.local.MealsDao
+import com.example.testapplication.data.local.NotificationDao
 import com.example.testapplication.data.local.entity.MealsEntity
 import com.example.testapplication.data.local.entity.NotificationEntity
 import com.example.testapplication.data.model.Meals
+import com.example.testapplication.data.model.NotificationModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.hamcrest.CoreMatchers.instanceOf
+import org.hamcrest.MatcherAssert.assertThat
+import org.hamcrest.core.Is.`is`
+import org.junit.Assert.assertThrows
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.doAnswer
+import org.mockito.kotlin.isNotNull
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.verify
 import java.util.Date
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class RepositoryTest {
     private lateinit var repository: Repository
+    private lateinit var fakeRemoteSource: FakeMealRemoteDataSource
+    private lateinit var fakeMealsDao: FakeMealsDao
+    private lateinit var fakeNotificationDao: FakeNotificationDao
+
+    @Mock
+    lateinit var mockMealsDao: MealsDao
+    @Mock
+    lateinit var mockNotificationDao: NotificationDao
+
     private val dummyMeals: List<MealsEntity> = listOf(
         MealsEntity(id = 0),
         MealsEntity(id = 1),
@@ -34,9 +59,10 @@ class RepositoryTest {
 
     @Before
     fun setUp() {
-        val fakeRemoteSource = FakeMealRemoteDataSource(dummyMeals.toApiModel().toMutableList())
-        val fakeMealsDao = FakeMealsDao(dummyMeals.toMutableList())
-        val fakeNotificationDao = FakeNotificationDao(dummyNotification)
+        MockitoAnnotations.openMocks(this)
+        fakeRemoteSource = FakeMealRemoteDataSource(dummyMeals.toApiModel().toMutableList())
+        fakeMealsDao = FakeMealsDao(dummyMeals.toMutableList())
+        fakeNotificationDao = FakeNotificationDao(dummyNotification)
         repository = Repository(
             fakeRemoteSource,
             fakeNotificationDao,
@@ -46,8 +72,77 @@ class RepositoryTest {
     }
 
     @Test
-    fun givenApiSource_retrieveAll_returnSuccess(){
+    fun givenApiSource_retrieveAll_returnSuccess() = runTest {
+        repository.getAllNotification().test {
+            val oneData = awaitItem()
+            assertThat(oneData, instanceOf(Result.Success::class.java))
+            assertThat((oneData as Result.Success).data[0].id, `is`(dummyNotification[0].id))
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
 
+    @Test
+    fun givenOneMealData_retrieveOne_returnSuccess() = runTest {
+        val oneData = dummyMeals[1]
+        repository.getDetailMeal(oneData.id).test {
+            val data = awaitItem()
+            assertThat(data, instanceOf(Result.Success::class.java))
+            assertThat((data as Result.Success).data.idMeal, `is`(oneData.id))
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun saveOneNotification_shouldSuccess() = runTest {
+        val oneData = NotificationModel(id = 99, mealId = 11, arrived = Date())
+
+        repository.saveLocalNotification(oneData)
+        repository.getAllNotification().test {
+            val data = (awaitItem() as Result.Success).data
+            assertThat(oneData, `is`(data.find { it.id == oneData.id }))
+            awaitComplete()
+        }
+    }
+
+
+    @Test
+    fun saveOneMeal_shouldSuccess() = runTest {
+        val oneData = Meals(idMeal = 11)
+
+        repository.saveLocalMeal(oneData)
+        repository.getDetailMeal(oneData.idMeal).test {
+            val data = (awaitItem() as Result.Success).data
+            assertThat(oneData, `is`(data))
+            awaitComplete()
+        }
+    }
+
+
+    @Test(expected = IllegalAccessError::class)
+    fun saveOneNotification_shouldError() = runTest {
+        val oneData = NotificationModel(id = 99, mealId = 11, arrived = Date())
+        doAnswer {
+            throw IllegalAccessError("Just something that should be happened")
+        }.`when`(mockNotificationDao).saveOneNotification(any())
+
+        repository = Repository(fakeRemoteSource, mockNotificationDao, fakeMealsDao, TestCoroutineDispatcher())
+        repository.saveLocalNotification(oneData)
+
+        verify(mockNotificationDao).saveOneNotification(any())
+    }
+
+
+    @Test(expected = IllegalAccessError::class)
+    fun saveOneMeal_shouldError() = runTest {
+        val oneData = Meals(idMeal = 11)
+        doAnswer {
+            throw IllegalAccessError("Just something that should be happened")
+        }.`when`(mockMealsDao).saveOneMeal(any())
+
+        repository = Repository(fakeRemoteSource, fakeNotificationDao, mockMealsDao, TestCoroutineDispatcher())
+        repository.saveLocalMeal(oneData)
+
+        verify(mockMealsDao).saveOneMeal(any())
     }
 }
 

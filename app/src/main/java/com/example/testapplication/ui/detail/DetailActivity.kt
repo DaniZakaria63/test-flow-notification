@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.RequestManager
 import com.example.testapplication.BuildConfig.TAG
 import com.example.testapplication.data.Result
+import com.example.testapplication.data.model.Meals
 import com.example.testapplication.data.source.DummyNotificationHelper.Companion.NOTIFICATION_DEFAULT_IMG_URL
 import com.example.testapplication.databinding.ActivityDetailBinding
 import com.example.testapplication.ui.base.DetailViewModel
@@ -27,7 +28,7 @@ import javax.inject.Named
 @AndroidEntryPoint
 class DetailActivity : AppCompatActivity() {
     private var _binding: ActivityDetailBinding? = null
-    private val binding: ActivityDetailBinding get() = _binding!!
+    val binding: ActivityDetailBinding get() = _binding!!
 
     @Inject
     @Named("DetailViewModelFactory")
@@ -43,13 +44,16 @@ class DetailActivity : AppCompatActivity() {
         adapter = IngredientAdapter()
         _binding = ActivityDetailBinding.inflate(layoutInflater)
         binding.apply {
-            viewModel = detailViewModel
+            mealData = Meals(0)
             lifecycleOwner = this@DetailActivity
         }
         setContentView(binding.root)
 
         val mealId = intent.getIntExtra("ID", 0)
-        if (mealId < 1) throw IllegalAccessException("Make sure parameter is correct")
+        if (mealId < 1) {
+            Log.e(TAG, "onCreate: invalid parameter value", IllegalAccessException("Make sure parameter is correct"))
+            onBackPressed()
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             binding.imgHeader.setRenderEffect(
@@ -67,6 +71,7 @@ class DetailActivity : AppCompatActivity() {
 
                 launch {
                     detailViewModel.mealData.collect {
+                        binding.mealData = it
                         processImage(it.strMealThumb)
                     }
                 }

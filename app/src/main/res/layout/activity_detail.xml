@@ -5,8 +5,8 @@
 
     <data>
         <variable
-            name="viewModel"
-            type="com.example.testapplication.ui.base.DetailViewModel" />
+            name="mealData"
+            type="com.example.testapplication.data.model.Meals" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -42,7 +42,7 @@
                     android:layout_height="?actionBarSize"
                     app:layout_collapseMode="parallax"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                    app:title="@{viewModel.mealData.strMealFormatted}" />
+                    app:title="@{mealData.strMealFormatted}" />
             </com.google.android.material.appbar.CollapsingToolbarLayout>
         </com.google.android.material.appbar.AppBarLayout>
 
@@ -68,7 +68,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="Title"
-                    android:text="@{viewModel.mealData.strMeal}"
+                    android:text="@{mealData.strMeal}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -79,7 +79,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/baseline_2"
                     android:hint="-"
-                    android:text="@{viewModel.mealData.strArea}"
+                    android:text="@{mealData.strArea}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/txt_title" />
 
@@ -90,7 +90,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/baseline_8"
                     android:hint="-"
-                    android:text="@{viewModel.mealData.strCategory}"
+                    android:text="@{mealData.strCategory}"
                     app:layout_constraintBottom_toBottomOf="@id/txt_area"
                     app:layout_constraintStart_toEndOf="@id/txt_area"
                     app:layout_constraintTop_toTopOf="@id/txt_area" />
@@ -111,7 +111,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:hint="-"
-                    android:text="@{viewModel.mealData.strTags}"
+                    android:text="@{mealData.strTags}"
                     app:layout_constraintBottom_toBottomOf="@id/label_tags"
                     app:layout_constraintStart_toStartOf="@id/txt_category"
                     app:layout_constraintTop_toTopOf="@id/label_tags" />
@@ -161,7 +161,7 @@
                     android:layout_marginTop="@dimen/baseline_1"
                     android:layout_marginBottom="@dimen/baseline_4"
                     android:hint="-"
-                    android:text="@{viewModel.mealData.strInstructionsFormatted}"
+                    android:text="@{mealData.strInstructionsFormatted}"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/label_instruction" />
 
