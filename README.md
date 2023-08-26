@@ -2,6 +2,10 @@
 
 An advanced testing android application to test complicated source with first-hand implementation.
 
+<p align="center">
+<img src="https://github.com/DaniZakaria63/test-flow-notification/assets/43902417/3d0b0f15-c426-494f-a51e-0317f5955c04" height="250">
+</p>
+
 ### This project is about 
 
 Technology stack has implemented:
@@ -21,6 +25,10 @@ Testing MVVM architecture such as ViewModel, Fragment, Activity, Repository, Dat
 ### The architecture
 
 Testable and maintenable android architecture is more easier with Hilt. So, basically for functional class inherit their parent interface which represented its functionality. Then, for ViewModel need little bit re-configuration because testing activity can be so tough if don't do so.
+
+<p align="center">
+<img src="https://github.com/DaniZakaria63/test-flow-notification/assets/43902417/dd04118d-e099-4323-ae9b-a34d8d14d409">
+</p>
 
 Abstract class ViewModel as parent and type that provided inside activity. The activity access viewmodel using factory which handled and configured with custom Hilt module, either ```DefaultViewModelFactory``` or ```TestViewModelFactory```
 
